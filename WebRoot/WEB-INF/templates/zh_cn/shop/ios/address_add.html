@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+	<script src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+	<script src="$!webPath/resources/style/system/front/wap/js/jquery.validate.min.js"></script>
+	
+<script>
+jQuery.validator.addMethod("mobile_telephone",function(value,element){
+  if(jQuery("#telephone").val()==""&&jQuery("#mobile").val()==""){
+     return false;
+  }else return true;
+});
+jQuery(document).ready(function(){
+  //								
+ jQuery("#theForm").validate({
+	errorPlacement: function(error, element) {
+// 		error.appendTo(element.parent()); 
+		error.appendTo(element.parent().find(".err"));  
+	    },
+    rules:{
+	  trueName:{required :true},
+	  area1:{required :true},
+	  area_info:{required :true},
+	  mobile:{required :true}
+	 },
+	messages:{
+	  trueName:{required :"收货人不能为空"},
+	  area1:{required :"请选择详细区域"},
+	  area_info:{required :"详细地址不能为空"},
+	  mobile:{required :"联系电话不能为空"} 
+	}
+  });
+    //
+ jQuery("select").change(function(){
+     var level=jQuery(this).attr("level");
+	 var id=jQuery(this).val();
+	 if(id!=""){
+	  jQuery.post("$!webPath/load_area.htm",{"pid":id},function(data){
+	     jQuery("#area"+level).empty();
+		  jQuery("#area"+level).append("<option value=''>请选择</option>");
+		  jQuery("#area"+(Number(level)+1)).empty();
+		    jQuery("#area"+(Number(level)+1)).hide();
+	    jQuery.each(data, function(index,item){
+		  jQuery("#area"+level).append("<option value='"+item.id+"'>"+item.areaName+"</option>");
+		  jQuery("#area"+level).show();
+		});
+	  },"json");
+	 }else{
+	   for(var i=level;i<=3;i++){
+	    jQuery("#area"+i).empty();
+	    jQuery("#area"+i).hide();
+	   }
+	 }
+  });
+  //
+ jQuery("#area3").change(function(){
+   var id=jQuery(this).val();
+   jQuery("#area_id").val(id);
+ });
+});
+
+function saveForm(){
+	jQuery("#theForm").submit();
+}	
+	
+</script>
+</head>
+<body>
+<!-- 	<div class="user_bar"> -->
+<!-- 		<a href="javascript:history.go(-1);" class="back"><img width="30" -->
+<!-- 			height="30" -->
+<!-- 			src="$!webPath/resources/style/system/front/wap/images/back_black.png"></a><span -->
+<!-- 			class="fl">地址添加</span> -->
+<!-- 	</div> -->
+	<div class="phone_hd">
+		<a class="back" href="javascript:history.go(-1);"><img
+			src="$!webPath/resources/style/system/front/wap/images/back.png"
+			width="25" height="25"></a>地址添加
+	</div>
+
+	<div class="info_form">
+	  <form action="$!webPath/buyer/address_save.htm" id="theForm" name="theForm" method="post" novalidate="novalidate">
+	  <div style="height:49px;" class="mt50"></div>
+	  <ul>
+	    <li><span class="form_title"><strong class="orange fontsize20">*</strong>收货人</span><span class="form_size300">
+	      <input type="text" id="trueName" name="trueName" value="$!obj.trueName" />
+	      <input name="id" type="hidden" id="id" value="$!obj.id" />
+	      <label for="trueName" generated="true" class="err" style="color:red;"></label>
+	      </span>
+	    </li>
+	    <li><span class="form_title"><strong class="orange fontsize20">*</strong>手机</span><span class="form_size300">
+	      <input type="text" maxlength="11" value="$!obj.mobile" id="mobile" name="mobile">
+	      <label for="trueName" generated="true" class="err" style="color:red;"></label>
+	      </span>
+	    </li>
+	    <li>
+			<span class="select_left"><strong class="orange fontsize20">*</strong>所在区域</span>
+	        <span id="area_area_info">$!{obj.area.parent.parent.areaName} $!{obj.area.parent.areaName} $!{obj.area.areaName}</span>
+	        <select name="area1" id="area1" level="2" style="width:100px;#if($!obj)display:none;#end">
+	                    <option value="" selected="selected">请选择地区</option>
+	 				  #foreach($area in $areas)
+	                     <option value="$!area.id">$!area.areaName</option>
+					  #end
+	        </select>
+	        <input type="button" name="area_edit" id="area_edit" value="修改" #if(!$!obj)style="display:none;"#end onclick="javascript:jQuery('#area1').show();jQuery('#area_area_info').empty();jQuery('#area_id').val('');jQuery(this).hide();" />
+	        <select name="area2" id="area2" style="display:none;width:60px;" level="3"></select>
+	        <select name="area3" id="area3" style="display:none;width:60px;" level="4"></select>
+	        <label for="trueName" generated="true" class="err" style="color:red;"></label>  
+	    </li>
+	  	<li><span class="form_title"><strong class="orange fontsize20">*</strong>详细地址</span><span class="form_size300">
+	      <input name="area_info" type="text" id="area_info" value="$!obj.area_info" />
+	      <label for="trueName" generated="true" class="err" style="color:red;"></label>
+	      </span>
+	    </li>
+		<li><span class="select_left">选择配送店铺</span>
+		<span>$!{obj.def_store.store_name}</span>
+		<select name="def_store_id" style="width: 100%;" id="def_store_id">
+				<option value="">请选择...</option> #foreach($obj in $objs)
+				<option value="$!obj.id">$!obj.store_name</option> #end
+		</select></li>
+	    <li><span class="form_title">邮编</span><span class="form_size300">
+	      <input name="zip" type="text" id="zip" value="$!obj.zip" />
+	      </span>
+	    </li>
+	  </ul>
+	  
+	  <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+	  
+	 </form>
+	  <div class="red_submit"><a onclick="saveForm();" href="javascript:void(0);">提交</a></div>
+	</div>
+<div style="height:49px;" class="mt50"></div>
+
+$!httpInclude.include("/footer.htm") 
+
+
+</body>
+</html>

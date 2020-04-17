@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- <html lang="en"> -->
+<!-- <head> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta charset="utf-8" />
+  <title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <link rel="stylesheet" href="$!webPath/plug-in/ace/css/bootstrap.css" />
+  <link rel="stylesheet" href="$!webPath/plug-in/ace/css/font-awesome.css" />
+  <link rel="stylesheet" type="text/css" href="$!webPath/plug-in/accordion/css/accordion.css">
+  <link rel="stylesheet" href="$!webPath/plug-in/ace/css/ace-fonts.css" />
+  <link rel="stylesheet" href="$!webPath/plug-in/ace/css/jquery-ui.css" />
+  <link rel="stylesheet" href="$!webPath/plug-in/ace/css/ace.css" class="ace-main-stylesheet" id="main-ace-style" />
+<!--   <script src="$!webPath/plug-in/ace/js/ace-extra.js"></script> -->
+  <script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script>
+
+jQuery(document).ready(function(){
+	  jQuery("#theForm").validate({
+		     errorPlacement:function(error,element) {
+		         error.appendTo(jQuery("#showErrMsg"));  
+// 		         jQuery("#login_error_sp").show('normal');
+		       },
+		   	success:function(label){
+// 		   		jQuery("#login_error_sp").hide();
+		   	},
+		rules: {
+				username: "required",
+				password: "required",
+				code:{
+					required:true,
+					remote:{
+						    url: "$!webPath/verify_code.htm",     //后台处理程序
+				            type: "post",               //数据发送方式
+				            dataType: "json",           //接受数据格式   
+				            data: {                     //要传递的数据
+				                  "code": function(){return jQuery("#code").val();}
+						     }
+						  }
+				}
+				},
+			messages: {
+				username: "用户名不能为空&nbsp;",
+				password: "密码不能为空&nbsp;",
+				code:{
+					  required:"验证码不能为空&nbsp;",
+					  remote:"验证码不正确&nbsp;"
+					}
+			}
+	  });
+	});
+
+function refreshCode(){
+	jQuery("#code_img").attr("src","$!webPath/verify.htm?d"+new Date().getTime());
+}
+function login(){
+	jQuery("#theForm").submit();
+}
+var EnterSubmit = function(evt){
+evt = window.event || evt;
+ if (evt.keyCode == 13)
+ { 
+  login();
+ }
+}
+window.document.onkeydown=EnterSubmit;
+jQuery(document).ready(function(){
+     if(top.location!=this.location)top.location=this.location;//跳出框架在主窗口登录
+	jQuery('#username').focus();	
+});
+</script>
+
+</head>
+<body class="login-layout light-login">
+<div class="main-container">
+  <div class="main-content">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1">
+        <div class="login-container">
+          <div class="center">
+            <h1 id="id-text2" class="grey">
+              <i class="ace-icon fa fa-leaf green"></i>
+               	$!config.title
+            </h1>
+            <h4 class="blue" id="id-company-text">后台管理登录</h4>
+          </div>
+          <div class="space-6"></div>
+          <div class="position-relative">
+            <div id="login-box" class="login-box visible widget-box no-border">
+              <div class="widget-body">
+                <form  class="form-horizontal"  name="theForm" id="theForm" action="$!webPath/wemalls_login.htm" method="post" >
+                <div class="widget-main">
+                 <div class="alert alert-warning alert-dismissible" style="padding:0px;background:none;border:none;" role="alert" id="errMsgContiner">
+<!-- 				  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+				  <div id="showErrMsg" style="color:#ff0000;"></div>
+				</div>
+                  <h4 class="header blue lighter bigger">
+                    <i class="ace-icon fa fa-coffee green"></i>
+                	    用户登录
+                  </h4>
+                  <div class="space-6"></div>
+                      <label class="block clearfix">
+								<span class="block input-icon input-icon-right">
+									<input type="text"  name="username" class="form-control" placeholder="请输入用户名"   id="username"   />
+									<i class="ace-icon fa fa-user"></i>
+								</span>
+                      </label>
+                      <label class="block clearfix">
+								<span class="block input-icon input-icon-right">
+									<input type="password" name="password" class="form-control" placeholder="请输入密码"  id="password"  />
+									<i class="ace-icon fa fa-lock"></i>
+								</span>
+                      </label>
+                      <label class="block clearfix">
+                        <div class="input-group">
+                          <input type="text" style="width:150px" name="code"   id="code" class="form-control" placeholder="请输入验证码"  onkeydown="randCodeKeyDown()"/>
+                          <span class="input-group-addon" style="padding: 0px;"><img src="$!webPath/verify.htm" id="code_img" onclick="refreshCode();"  /></span>
+                        </div>
+                      </label>
+                      <div class="space"></div>
+                      <div class="clearfix">
+                        <label class="inline">
+<!--                           <input type="checkbox" class="ace" id="on_off"  name="remember" value="yes"/> -->
+<!--                           <span class="lbl">记住用户名</span> -->
+                        </label>
+                        <button type="button" id="but_login"  onclick="login();" class="width-35 pull-right btn btn-sm btn-primary">
+                          <i class="ace-icon fa fa-key"></i>
+                          <span class="bigger-110" >登录</span>
+                        </button>
+                        <input name="login_role" type="hidden" id="login_role" value="admin" />
+                      </div>
+                      <div class="space-4"></div>
+                </div>
+                </form>
+              </div>
+            </div>
+            <div class="center"><h4 class="blue" id="id-company-text">&copy; wemalls </h4></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>

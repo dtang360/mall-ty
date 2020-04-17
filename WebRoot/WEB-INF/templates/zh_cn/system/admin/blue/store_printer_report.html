@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script src="$!webPath/resources/js/jquery.poshytip.min.js"></script>
+<link href="$!webPath/resources/style/system/manage/$!{config.websiteCss}/template.css"  rel="stylesheet" type="text/css"/>
+<script>
+function ajax_update(id,fieldName,obj){
+   var val=jQuery(obj).val();
+    jQuery.ajax({type:'POST',
+	              url:'$!webPath/admin/store_ajax.htm',
+				  data:{"id":id,"fieldName":fieldName,"value":val},
+				beforeSend:function(){
+				  
+				},
+			   success:function(data){
+	             if(val==""){
+				   jQuery(obj).attr("src","$!webPath/resources/style/system/manage/blue/images/"+data+".png");
+				 }else{
+				   jQuery(obj).val(val);
+				 }      
+              }
+	    });
+}
+</script>
+</head>
+<body>
+<div class="cont">
+<!--   <div class="settab"><span class="tab-one"></span> <span class="tabs"> <a href="$!webPath/admin/store_list.htm"  class="this">管理</a> | <a href="$!webPath/admin/store_add.htm">新增</a>|<a href="$!webPath/admin/store_gradelog_list.htm">升级申请</a> </span> <span class="tab-two"></span></div> -->
+  <div class="settab"><span class="tab-one"></span> <span class="tabs"> <a  class="this">管理</a></span> <span class="tab-two"></span></div>
+  <form style="display:none;" action="$!webPath/admin/store_list.htm" method="post" name="queryForm" id="queryForm">
+  <div class="allmem_search">
+    <ul>
+      <li> 
+      <span>店铺名称</span> <span class="allmen size4">
+        <input name="store_name" value="$!q_store_name" type="text" id="store_name" />
+        </span> <span>店铺等级</span> <span class="allmen size4">
+        <select name="store.grade.id" id="store.grade.id">
+		  <option value="">请选择...</option>
+		  #foreach($!grade in $grades)
+		  <option #if($!q_store_grade_id==$!grade.id) selected="selected" #end value="$!grade.id">$!grade.gradeName</option>
+		  #end
+        </select>
+        </span> 
+<!--         <span>店铺状态</span> <span class="allmen size4"> -->
+<!--         <select name="store_status" id="store_status"> -->
+<!-- 		  <option value=""  #if($q_store_status=="") selected="selected" #end >请选择...</option> -->
+<!-- 		  <option value="1" #if($q_store_status=="1") selected="selected" #end >待审核</option> -->
+<!-- 		  <option value="2" #if($q_store_status=="2") selected="selected" #end >正常</option> -->
+<!-- 		  <option value="3" #if($q_store_status=="3") selected="selected" #end >违规关闭</option> -->
+<!--         </select> -->
+<!--         </span>  -->
+        <span class="btn_search">
+        <input name="" type="button"  value="查询" style="cursor:pointer;" onclick="query();"/>
+        </span> </li>
+    </ul>
+  </div>
+  </form>
+    <form action="$!webPath/admin/store_list.htm" method="post" name="ListForm" id="ListForm">
+  <div class="leveltable">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="level_table">
+      <tr style="background: #if($!config.websiteCss=='blue') #2A7AD2 #end 
+      #if($!config.websiteCss=='black')#333 #end; height:30px; color:#FFF">
+<!--         <td colspan="2">&nbsp;</td> -->
+        <td width="20%" >店铺名称</td>
+<!--         <td width="15%">联系电话</td> -->
+        <td width="10%">打印机编号</td>
+        <td width="6%">总计</td>
+        <td width="10%">今天</td>
+        <td width="8%">本周</td>
+        <td width="8%">本月</td>
+<!--         <td width="6%">推荐</td> -->
+<!--         <td>操作</td> -->
+      </tr>
+	  #foreach($obj in $objs)
+      <tr>
+	  #foreach($ob in $obj)
+<!--         <td colspan="2"><input type="checkbox" name="checkbox" id="checkbox" value="$!obj.id" />        </td> -->
+<!--         <td>$!{obj.size()}</td> -->
+<!--         <td>$!{obj.user.userName}</td> -->
+<!--         <td>$!{obj.printerSN}</td> -->
+<!--         <td>$!{obj.cou}</td> -->
+<!--         <td>$!{obj.days}</td> -->
+<!--         <td>$!{obj.weeks}</td> -->
+<!--         <td>$!{obj.months}</td> -->
+<!--                 <td>平台自营店</td> -->
+<!--         <td>$!{obj.user.userName}</td> -->
+ #if($velocityCount != 2)
+        <td>$!{ob}</td>
+        #end
+<!--         <td>1</td> -->
+<!--         <td>1</td> -->
+<!--         <td>1</td> -->
+<!--         <td>1</td> -->
+      #end
+      </tr>
+      #end
+    </table>
+  </div>
+  <div class="fenye">
+    <input type="hidden" name="mulitId" id="mulitId" />
+    <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+	<span id="queryCondition">
+	#foreach($sm in $sms)
+	<input name="$!sm.key" type="hidden" id="$!sm.key" value="$!$!sm.value" />
+	#end
+	</span>
+  $!gotoPageFormHTML</div>
+  </form>
+</div>
+</body>
+</html>

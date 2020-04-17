@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/zzsc.css" rel="stylesheet" type="text/css">
+<script src="$!webPath/resources/style/shop/default/js/jquery1.42.min.js" type="text/javascript"></script>
+<script src="$!webPath/resources/style/shop/default/js/jquery.SuperSlide.2.1.1.js" type="text/javascript"></script>
+<script src="$!webPath/resources/style/shop/default/js/head.js" type="text/javascript"></script>
+<script type="text/javascript" src="$!webPath/resources/style/shop/default/js/koala.min.1.5.js"></script>
+
+<link href="$!webPath/resources/style/shop/default/index_files/public.css" type="text/css" rel="stylesheet">
+<link href="$!webPath/resources/style/shop/default/index_files/index.css" type="text/css" rel="stylesheet">
+<link href="$!webPath/resources/style/shop/default/index_files/public_auto.css" type="text/css" rel="stylesheet">
+
+<!-- <link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" /> -->
+<!-- <link href="$!webPath/resources/style/system/front/default/css/public_auto.css" type="text/css" rel="stylesheet" /> -->
+<!-- <link href="$!webPath/resources/style/system/front/default/css/index.css" type="text/css" rel="stylesheet" /> -->
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/DataLazyLoad.min.js"></script>
+<script src="$!webPath/resources/js/jquery.lazyload.js"></script>
+<script src="$!webPath/resources/js/jquery.SuperSlide.2.1.1.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script src="$!webPath/resources/js/jquery-ui-1.8.21.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.validate.js"></script>
+<script src="$!webPath/resources/js/jquery.KinSlideshow.min.js"></script>
+
+<script  type="text/javascript" >
+
+jQuery(document).ready(function(){
+	
+	
+	  jQuery(".sale_two_img img").lazyload({effect:"fadeIn",width:150,height:150});
+	  //鼠标经过推荐商品tab
+	  jQuery("#index_sale_tab ul li").mouseover(function(){								 
+		jQuery(this).siblings().removeClass("this");
+		jQuery(this).addClass("this");
+		var i = jQuery(this).index();
+		jQuery("#index_sale_tab").siblings().hide();
+		jQuery("#index_sale_tab").siblings().eq(i).show();
+		jQuery("#sale_change").attr("mark",jQuery(this).attr("id").replace("goodscase",""));	
+	  });
+	  
+	  //团购图片轮播懒加载
+	  jQuery(".goods_tab img").lazyload({effect:"fadeIn",width:210,height:210});
+	  //楼层懒加载
+	  jQuery(".floor_main img").lazyload({effect:"fadeIn",width:147,height:147});
+	  
+	 //
+	 jQuery(".index_sales_left>h3>ul>li").mouseover(function(){
+	    jQuery(".index_sales_left>h3>ul>li").removeClass("this");
+		jQuery(this).addClass("this");
+		jQuery(".index_sales_box>[class^=index_sales_]").hide();
+		var div_index=jQuery(this).attr("div_index");
+		jQuery(".index_sales_"+div_index).show();
+	 });
+
+
+	 
+	  var size="4";
+	  if(size>0){
+	  	  jQuery("html").scrollTop(0);	//刷新页面返回顶部	
+		  //Call DataLazyLoad
+		  jQuery("#floors .floor_main").DataLazyLoad({load : function(page, unLocked) {
+			var html = '';
+			var max = 8+1;
+			var count = page-1;
+			var id =jQuery(".floor_main[count="+count+"]").attr("id");
+			var load_url =jQuery(".floor_main[count="+count+"]").attr("load_url");
+			//Generate the data
+			jQuery.get("$!webPath/"+load_url,{"id":id,"count":count},function(data){
+						html += data;
+						jQuery('#floors .floor_main[count='+count+']').html(html);
+						
+// 						 jQuery(".hot_sell_ul li").mouseover(function(){
+// 							 jQuery(this).css("opacity","1")
+// 						 	});
+						 
+						//鼠标经过楼层tab时
+						jQuery(".floorul li").mouseover(function(){
+							var store_gc=jQuery(this).attr("store_gc");
+						    jQuery(".floorul li[store_gc="+store_gc+"]").css("cursor","pointer").removeClass("this");
+							jQuery(this).addClass("this");
+						    var id=jQuery(this).attr("id");
+							jQuery(".storey_list[store_gc="+store_gc+"]").hide();
+							jQuery(".storey_list[store_gc="+store_gc+"][id="+id+"]").show();
+						});
+						
+					
+						 
+						page = page >= max ? 0 : page + 1;
+						unLocked(page);
+				},"text");
+		  }});
+	  }else{
+		//jQuery("#toolbar").load("toolbar.htm");	 
+	  }	 
+	 
+	 
+	  
+	  jQuery(window).scroll(function(){
+		var top = jQuery(document).scrollTop();
+		//楼层导航跟随
+		jQuery(".back_floor").css("display","none");
+		jQuery("li[floor_id^=floor_] b").css("display","block");
+		jQuery("div[id^=floor_]").each(function(){//循环每一个楼层
+		    var floor_top=jQuery(this).offset().top-top;
+			 if(floor_top<=580&&floor_top>=0){//如果到达一个位置
+				  var floor_id=jQuery(this).attr("id");
+				  if(jQuery("li[floor_id="+floor_id+"] b").css("display","none"))
+				  {
+					jQuery(".back_floor").css("display","block");  
+				  }
+		 }
+		});
+	  });	
+	  
+	  //back_floor
+	  jQuery(".back_floor>ul>li").click(function(){
+	  	 var id=jQuery(this).attr("floor_id");
+	     var top = jQuery("#"+id).offset().top-80;
+	     jQuery('body,html').animate({scrollTop:top},1000);
+	  });
+	  
+// 	var l=jQuery(".main").offset().left;
+// 	  jQuery(".back_box_x").css("left",l-43+"px");
+	});
+
+// 	jQuery(window).resize(function() {
+// 	   var l=jQuery(".main").offset().left;
+// 	   jQuery(".back_box_x").css("left",l-43+"px");
+// 	});
+
+function search_form(){
+  var keyword=arguments[0];
+  var type=arguments[1];
+  if(keyword!=""&&keyword!=undefined){
+   jQuery("#keyword").val(keyword);
+  }
+  if(type!=""&&type!=undefined){
+    jQuery("#type").val(type);
+  }
+  jQuery("#searchForm").submit();	
+  jQuery("#keyword").val("");
+}
+</script>
+
+</head>
+<body>
+<div >
+$!httpInclude.include("/top.htm")
+  <div class="wrap1180" style="width: 1208px;">
+$!httpInclude.include("/head.htm")
+</div>
+<div id="fsD1"  style="position: absolute;z-index: 0;width: 100%;" >
+          <div id="D1pic1" class="fPic" style="text-align:center;margin-top:41px;border-top: 2px solid #37C9FF;">
+<!-- 				<div class="fcon" style="background-color:#2D7BFE;height: 431px;"> -->
+<!-- 					<a target="_blank" href="#"> -->
+<!-- 					<img -->
+<!-- 						src="$!webPath/resources/style/shop/default/images/bg004.jpg" -->
+<!-- 						style="opacity: 1; width: 1208px; height: 431px;"> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
+<!-- 				<div class="fcon" style="background-color:#F3BA24;height: 431px;"> -->
+<!-- 					<a target="_blank" href="#"> -->
+<!-- 					<img -->
+<!-- 						src="$!webPath/resources/style/shop/default/images/bg005.jpg" -->
+<!-- 						style="opacity: 1; width: 1208px; height: 431px;"> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
+<!-- 								<div class="fcon" style="background-color:#7607E2;height: 431px;"> -->
+<!-- 					<a target="_blank" href="#"> -->
+<!-- 					<img -->
+<!-- 						src="$!webPath/resources/style/shop/default/images/bg006.jpg" -->
+<!-- 						style="opacity: 1; width: 1208px; height: 431px;"> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
+<!-- 								<div class="fcon" style="background-color:#FEA94E;height: 431px;"> -->
+<!-- 					<a target="_blank" href="#"> -->
+<!-- 					<img -->
+<!-- 						src="$!webPath/resources/style/shop/default/images/bg007.jpg" -->
+<!-- 						style="opacity: 1; width: 1208px; height: 431px;"> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
+<script src="$!webPath/advert_invoke.htm?id=1"></script> 
+			</div>
+          <div class="fbg">
+            <div class="D1fBt" id="D1fBt"> 
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class="current">
+<!--             <i>1</i> -->
+            </a>
+<!--             <a href="javascript:void(0)" hidefocus="true" target="_self" class=""><i>2</i></a>  -->
+<!--             <a href="javascript:void(0)" hidefocus="true" target="_self" class="current"><i>3</i></a>  -->
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class="">
+<!--             <i>4</i> -->
+            </a>
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class=""></a>
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class=""></a>
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class=""></a>
+            </div>
+          </div>
+<!--           <span class="prev"></span> <span class="next"></span> -->
+          </div>
+		<div class="wrap1180" style="width: 1208px;">
+			<!-- 导航 开始 -->
+			<div class="warpper" style="width: 1208px;">
+				$!httpInclude.include("/nav.htm")
+				<!-- 导航 结束 -->
+				<div id="hdp">
+					<script type="text/javascript">
+	Qfast.add('widgets', { path: "$!webPath/resources/style/shop/default/js/terminator2.2.min.js", type: "js", requires: ['fx'] });  
+	Qfast(false, 'widgets', function () {
+		K.tabs({
+			id: 'fsD1',   //焦点图包裹id  
+			conId: "D1pic1",  //** 大图域包裹id  
+			tabId:"D1fBt",  
+			tabTn:"a",
+			conCn: '.fcon', //** 大图域配置class       
+			auto: 1,   //自动播放 1或0
+			effect: 'fade',   //效果配置
+			eType: 'click', //** 鼠标事件
+			pageBt:true,//是否有按钮切换页码
+			bns: ['.prev', '.next'],//** 前后按钮配置class                          
+			interval: 3000  //** 停顿时间  
+		}) 
+	})  
+</script>
+					<!-- 代码 结束 -->
+				</div>
+				<div id="tzgg"
+					style="left: 989px; height: 431px; border-top: 2px solid #37C9FF;">
+					<div class="ewm">
+						<img src="$!webPath/upload/apkcode.png"
+							width="146" height="146" />
+					</div>
+					<p>扫一扫 下载app</p>
+					<div class="title">公告</div>
+					<ul class="font_05">
+						#foreach($article in $articles) #if($!article.url!="")
+						#set($url="$!article.url") #else
+						#set($url="$!webPath/article_$!{article.id}.htm") #end
+						<li><a href="$!url" target="_blank">$!CommUtil.formatShortDate($!article.addTime)
+								$!CommUtil.substring("$!article.title",9)</a></li> #end
+					</ul>
+				</div>
+			</div>
+			<script type="text/javascript">
+$("#nav .tit").slide({
+	type:"menu",
+	titCell:".mod_cate",
+	targetCell:".mod_subcate",
+	delayTime:0,
+	triggerTime:10,
+	defaultPlay:false,
+	returnDefault:true
+});
+</script>
+	<div class="clearfix" > </div>
+			<!--内容部分 开始-->
+	<div class="wfull">
+    <div class="new-floor-title">热门活动</div>
+    <div class="new-floor-left">
+      <ul class="clearfix">
+        <li><a href="$!webPath/store_goods_list_65761.htm"><img src="$!webPath/resources/style/shop/default/images/01.jpg" /></a></li>
+      </ul>
+    </div>
+    <div class="new-floor-center">
+     <ul class="clearfix" >
+        <li style="margin-right:15px;"><a href="$!webPath/store_goods_list_65710.htm"><img src="$!webPath/resources/style/shop/default/images/02.jpg"/></a></li>
+        <li><a href="$!webPath/"><img src="$!webPath/resources/style/shop/default/images/03.jpg"/></a></li>
+        <li style="margin-top:14px; margin-right:15px;"><a href="$!webPath/store_goods_list_65761.htm"><img src="$!webPath/resources/style/shop/default/images/04.jpg"  /></a></li>
+        <li style="margin-top:14px; margin-right:0px;"><a href="$!webPath/search.htm"><img src="$!webPath/resources/style/shop/default/images/05.jpg"  /></a></li>
+      </ul>
+    </div>
+    <div class="new-floor-right">
+      <ul class="clearfix">
+        <li><a href="$!webPath/search.htm"><img src="$!webPath/resources/style/shop/default/images/06.jpg" /></a></li>
+      </ul>
+    </div>
+  </div>
+<div class="clearfix" > </div>
+<div class="wfull">
+   <div class="hot-ad">
+    <ul class="clearfix">
+        <li><a href="$!webPath/goods_98480.htm" target="blank"><img src="$!webPath/resources/style/shop/default/images/ad_01.jpg" /></a></li>
+        <li><a href="$!webPath/goods_98492.htm" target="blank"><img src="$!webPath/resources/style/shop/default/images/ad_02.jpg" /></a></li>
+        <li><a href="$!webPath/store_goods_list_65741.htm" target="blank"><img src="$!webPath/resources/style/shop/default/images/ad_03.jpg" /></a></li>
+        <li><a href="$!webPath/store_goods_list_65711.htm" target="blank"><img src="$!webPath/resources/style/shop/default/images/ad_04.jpg" /></a></li>
+    </ul>
+  </div>
+</div>
+  			$!httpInclude.include("/floor.htm") 
+			
+		</div>
+		<div class="clear"></div>
+		
+    </div>
+<!--     <div class="shopping">  -->
+<!--       #foreach($ac in $acs) -->
+<!--       <div class="shopone"> -->
+<!--         <h1>$!ac.className</h1> -->
+<!--         <ul> -->
+<!--           #foreach($article in $ac.articles) -->
+<!--           #if($!article.url!="") -->
+<!--           #set($url="$!article.url") -->
+<!--           #else -->
+<!--           #set($url="$!webPath/article_$!{article.id}.htm") -->
+<!--           #end -->
+<!--           <li><a  href="$!url" target="_blank">$!CommUtil.substring("$!article.title",12)</a></li> -->
+<!--           #end -->
+<!--         </ul> -->
+<!--       </div> -->
+<!--       #end  -->
+<!--     </div> -->
+		<div class="clear"></div>
+		$!httpInclude.include("/footer.htm")
+</body>
+</html>

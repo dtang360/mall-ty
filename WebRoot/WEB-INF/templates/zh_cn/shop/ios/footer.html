@@ -1,0 +1,35 @@
+<!--底部-->
+		<!--按钮-->
+	</div>
+	<!--悬浮层-->
+	<script>
+		function click_layer() {
+			var ret = jQuery("#show").attr("mark");
+			if (ret == "show") {
+				jQuery("#show").hide();
+				jQuery("#show").attr("mark", "hide");
+			} else {
+				jQuery("#show").show();
+				jQuery("#show").attr("mark", "show");
+			}
+		}
+	</script>
+	<div class="layer">
+		<div class="layer_show"  id="show" mark="hide">
+			<ul>
+				<li><a href="$!webPath/ios/index.htm"><img
+						src="$!webPath/resources/style/system/front/wap/images/layer_01.png"
+						width="20" height="20"><p>首页</p></a></li>
+				<li><a href="$!webPath/buyer/order.htm"><img
+						src="$!webPath/resources/style/system/front/wap/images/layer_02.png"
+						width="20" height="20"><p>订单</p></a></li>
+				<li><a href="$!webPath/goods_cart1.htm"><img
+						src="$!webPath/resources/style/system/front/wap/images/layer_03.png"
+						width="20" height="20"><p>购物车</p></a></li>
+				<li><a href="$!webPath/buyer/index.htm"><img
+						src="$!webPath/resources/style/system/front/wap/images/layer_04.png"
+						width="20" height="20"><p>用户中心</p></a></li>
+			</ul>
+			<div class="show_bg"></div>
+		</div>
+	</div>

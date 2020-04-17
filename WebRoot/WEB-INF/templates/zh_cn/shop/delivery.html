@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>$!{config.delivery_title} - $!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<!-- zysoft -->
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/cpzs.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/public.js"></script>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script> 
+<script src="$!webPath/resources/style/shop/default/js/nav.js"></script>
+<!-- zysoft -->
+<link href="$!webPath/resources/style/system/front/default/css/public.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/system/front/default/css/index.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/system/front/default/css/goods.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/system/front/default/css/goodshidden.css" rel="stylesheet" type="text/css" />
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script src="$!webPath/resources/js/jquery.lazyload.js"></script>
+<script>
+jQuery(document).ready(function(){
+ jQuery(".special_list_pic img").lazyload({effect:"fadeIn",width:208,height:208});
+ jQuery(".special_list ul").hover(function(){
+		jQuery(this).parent().parent().find("ul[class='special_list_ul_this']").attr("class","special_list_ul");
+		jQuery(this).attr("class","special_list_ul_this");
+		},function(){
+		jQuery(this).attr("class","special_list_ul");	
+			});
+});
+</script>
+</head>
+<body>
+﻿$!httpInclude.include("/top.htm")
+<div class="main"> $!httpInclude.include("/head.htm")
+  $!httpInclude.include("/nav1.htm")
+  <div class="index_special"> 
+    <script src="$!webPath/advert_invoke.htm?id=262145"></script>
+    <div class="special_main"> #if($!objs.size()>0)
+      <form action="$!webPath/delivery.htm" method="post" id="ListForm">
+        <div class="special_main_box"> #foreach($obj in $objs)
+          #if($!obj.d_goods.goods_main_photo)               
+          #set($img="$!imageWebServer/$!{obj.d_goods.goods_main_photo.path}/$!{obj.d_goods.goods_main_photo.name}")
+          #else
+          #set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+          #end
+          <div class="special_list"> 
+            <!--special_list_ul_this-->
+            <ul class="special_list_ul">
+            <li class="special_list_pic"><a href="$!webPath/goods_$!{obj.d_goods.id}.htm" target="_blank"><img src="$!imageWebServer/resources/style/common/images/loader.gif" original="$!img" onerror="this.src='$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}';" width="28" height="28"/></a></li>
+            <li class="special_list_name"><a href="$!webPath/goods_$!{obj.d_goods.id}.htm" title="$!{obj.d_goods.goods_name}">$!{obj.d_goods.goods_name}</a></li>
+            <li class="send"><a class="price_left" href="$!webPath/goods_$!{obj.d_goods.id}.htm">¥$!{obj.d_goods.goods_current_price}</a><em>市场价:¥$!{obj.d_goods.goods_price}</em></li>
+            <li class="h4"> <span class="buy">
+              <div class="sd"><b>赠品：</b>$!CommUtil.substring("$!{obj.d_delivery_goods.goods_name}",7)</div>
+              <div class="sd">剩余$!{obj.d_goods.goods_inventory}件</div>
+              <div class="d_buy"><a href="$!webPath/goods_$!{obj.d_goods.id}.htm" target="_blank">立即购买</a></div>
+              </span> #if($!obj.d_delivery_goods.goods_main_photo)               #set($img1="$!imageWebServer/$!{obj.d_delivery_goods.goods_main_photo.path}/$!{obj.d_delivery_goods.goods_main_photo.name}_small.$!{obj.d_delivery_goods.goods_main_photo.ext}")
+              #else
+              #set($img1="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+              #end <span class="pic"><img src="$!img1" width="70px" width="70px" /></span> </li>
+            </ul>
+            <i class="send_ps"><b></b></i> </div>
+          #end </div>
+        <div class="fenye" style="margin:0px auto; float:none; clear:both;">
+          <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+          <input name="bg_time" type="hidden" id="bg_time" value="$!bg_time" />
+          $!gotoPageFormHTML </div>
+      </form>
+    </div>
+    #else
+    <div class="starshop_list" style="width:100%; background:#FFF;">
+      <div class="sigh" style="margin-top:10px;"> <span><img src="$!imageWebServer/resources/style/system/front/default/images/sigh.png" width="120" height="109" /></span> <b>抱歉，没有买就送商品!</b> </div>
+    </div>
+    #end </div>
+ </div>
+$!httpInclude.include("/footer.htm")
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<!-- zysoft -->
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/cpzs.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/public.js"></script>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script> 
+<script src="$!webPath/resources/style/shop/default/js/nav.js"></script>
+<!-- zysoft -->
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+<script src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+
+</head>
+<body>
+
+<div class="main">
+  
+  	<div class="user_bar">
+		<a class="back" href="javascript:history.go(-1);" >
+			<img src="$!webPath/resources/style/system/front/wap/images/back_black.png" width="25" height="25">
+		</a>
+		<span class="fl">支付结果反馈</span>
+		<a class="edit fr" href="$!webPath/wap/index.htm">
+			<img src="$!webPath/resources/style/system/front/wap/images/home.png" width="25" height="25">
+		</a>
+	</div>
+	
+	
+	<div class="info_form">
+	  <div style="height:49px;" class="mt50"></div>
+	  
+	  <ul>
+	    <li>
+	    	支付成功! 您可以在<a href="$!webPath/buyer/order.htm">"我的订单"</a>查询该订单信息!
+	    </li>
+	  </ul>
+	</div>
+	
+	<div style="display:none" id="note" class="note"></div>
+	<div style="display:none" class="brand_class_opcity"></div>
+  	
+  
+   
+</div>
+
+   $!httpInclude.include("/footer.htm")
+</body>
+</html>

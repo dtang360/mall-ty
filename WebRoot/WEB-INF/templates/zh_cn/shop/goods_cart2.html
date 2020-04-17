@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>订单确认 - $!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<!-- zysoft -->
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/cpzs.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/public.js"></script>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script> 
+<script src="$!webPath/resources/style/shop/default/js/nav.js"></script>
+<!-- zysoft -->
+<link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/system/front/default/css/goods.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/common/css/jquery-ui-1.8.22.custom.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/common/css/overlay.css" type="text/css" rel="stylesheet" />
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery-ui-1.8.21.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script>
+jQuery(document).ready(function(){
+   //
+  #if($!addrs.size()==0)
+   jQuery("body").append("<div id='cart_address'><div class='white_content'><div class='white_box'><h1>新增收货地址</h1><div class='content_load'></div></div></div><div class='black_overlay'></div></div>");
+   var top=(document.documentElement.clientHeight-100)/2+document.documentElement.scrollTop+document.body.scrollTop;
+   var h=document.body.scrollHeight;
+   jQuery('.black_overlay').css("height",h);
+   jQuery(".white_content").css("position","absolute").css("top",top);
+   jQuery.ajax({type:'POST',url:"$!webPath/cart_address.htm",async:false,data:{"store_id":"$!store_id"},success:function(html){
+	    	jQuery(".content_load").remove(); 
+			jQuery("#cart_address .white_content").css("width","500");
+		    jQuery("#cart_address .white_box h1").after(html);
+		    jQuery("#cart_address").show();  
+	   }});   
+  #end
+  jQuery(":radio[name=invoiceType]").click(function(){
+     var val=jQuery(this).val();
+	 if(val=="1"){
+	   jQuery("#invoice_info").show();
+	 }else{
+	   jQuery("#invoice_info").hide();
+	 }
+  });
+  //
+  jQuery(":radio[name=addr_id]").click(function(){
+    var addr=jQuery(this).parent().parent().find("#address").html();
+	var person=jQuery(this).parent().parent().find("#person").html()+" "+jQuery(this).parent().parent().find("#mobile").html();
+	jQuery("#order_address_info").html("寄送至:"+addr);
+	jQuery("#order_person_info").html("收货人:"+person);
+  });
+  //
+  jQuery("#coupon_id").change(function(){
+      var coupon_amount=parseFloat(jQuery(this).find("option:selected").attr("coupon_amount"));
+	  if(isNaN(coupon_amount)){
+		 coupon_amount=0;
+	  }
+	  var goods_amount=parseFloat(jQuery("#goods_amount").val());
+	  jQuery("#order_coupon_div").show();
+	  var coupon_info="-¥"+coupon_amount;
+	  jQuery("#order_coupon").html(coupon_info);
+	  var ship_price=parseFloat(jQuery("#ship_price").val());
+	  if(isNaN(ship_price)){
+		  ship_price=0; 
+	  }
+	  var order_fee=goods_amount-coupon_amount+ship_price;
+	  jQuery("#order_store_amount").html("¥"+order_fee);
+	  jQuery("#order_pay_fee").html("¥"+order_fee);
+	  if(coupon_amount==0){
+	    jQuery("#order_coupon_div").hide();
+	  }
+  });
+  var addr_id = "";
+  addr_id = jQuery(":radio[name^=addr_id]:checked").val();
+  //
+  jQuery(":radio[name^=addr_id]").click(function(){
+       addr_id=jQuery(this).val();
+	   jQuery.ajax({type:'POST',url:'$!webPath/order_address.htm',data:{'addr_id':addr_id,"store_id":"$!sc.store.id"},dataType:'json',
+				  beforeSend:function(){
+					    jQuery("#order_save").attr("disabled",true);
+					  }, 
+				  success:function(data){
+	                 jQuery("#ship_price").empty();
+					 jQuery(data).each(function(index,item){
+					     jQuery("#ship_price").append("<option value='"+item.value+"'>"+item.key+"</option>");
+					 });
+				     var ship_price=parseFloat(jQuery("#ship_price").val());
+					 if(isNaN(ship_price)){
+					    ship_price=0; 
+					 }
+	                 var coupon_amount=parseFloat(jQuery("#coupon_id").find("option:selected").attr("coupon_amount"));
+					 if(isNaN(coupon_amount)){
+					   coupon_amount=0;
+					 }
+	                 var goods_amount=parseFloat(jQuery("#goods_amount").val());
+	                 var order_fee=goods_amount-coupon_amount+ship_price;
+	                 jQuery("#order_store_amount").html("¥"+order_fee);
+	                 jQuery("#order_pay_fee").html("¥"+order_fee); 
+					 jQuery("#order_save").attr("disabled",false);
+				  }
+	   });
+  });
+  //
+  jQuery("#ship_price").change(function(){
+     var ship_price=parseFloat(jQuery(this).val());
+	 if(isNaN(ship_price)){
+		 ship_price=0; 
+	 }
+	 var coupon_amount=parseFloat(jQuery("#coupon_id").find("option:selected").attr("coupon_amount"));
+	 if(isNaN(coupon_amount)){
+		 coupon_amount=0;
+	  }
+	 var goods_amount=parseFloat(jQuery("#goods_amount").val());
+	 var order_fee=goods_amount-coupon_amount+ship_price;
+	 jQuery("#order_store_amount").html("¥"+order_fee);
+	 jQuery("#order_pay_fee").html("¥"+order_fee); 
+	 var text=jQuery(this).find("option:selected").text();
+	 var transport=text.substring(0,text.indexOf("["));
+	 jQuery("#transport").val(transport);
+  });
+  //
+  jQuery(".baby_gp>a").mouseover(function(){
+	jQuery(this).parent().find(".arrow").show();									  
+    jQuery(this).parent().find(".baby_group").show();
+  });
+  jQuery(".baby_gp").mouseleave(function(){
+    jQuery(this).parent().find(".arrow").hide();									  
+    jQuery(this).parent().find(".baby_group").hide();
+  });
+  //
+  jQuery("#coupon_id").val("0");
+  jQuery("#ship_price").find("option:first").attr("selected",true);
+  jQuery(":radio[name^=addr_id]:first").attr("checked",true);
+});
+function save_order(){
+  jQuery("#cart_form").submit();
+}
+
+	function shxx_hide(){
+		jQuery("#shxx_title").hide();
+		jQuery("#md_title").show();
+		$("#delivery_way1").attr("checked","checked");
+		$("#delivery_way0").removeAttr("checked");
+	}
+
+	function shxx_show(){
+		jQuery("#shxx_title").show();
+		jQuery("#md_title").hide();
+		$("#delivery_way0").attr("checked","checked");
+		$("#delivery_way1").removeAttr("checked");
+	}
+</script>
+</head>
+<body>
+$!httpInclude.include("/top.htm")
+<div class="main"> $!httpInclude.include("/head.htm")
+  <div class="Steps_box">
+  $!httpInclude.include("/nav1.htm")
+    <div class="Steps">
+      <ul style="float:right;">
+        <li class="done prev">查看购物车</li>
+        <li class="this">确认订单</li>
+        <li>付款到卖家</li>
+        <li>确认收货</li>
+        <li class="last">评价</li>
+      </ul>
+    </div>
+    <form action="$!webPath/goods_cart3.htm" method="post" enctype="$!webPath/goods_cart3.htm" id="cart_form">
+      <div class="table">
+        <table width="100%" style="border-collapse:collapse;" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="5%" align="center" class="title">商品</td>
+            <td width="40%" align="center" class="title">名称</td>
+            <td width="10%" align="center" class="title">单价</td>
+            <td width="11%" align="center" class="title">数量</td>
+            <td width="11%" align="center" class="title">小计</td>
+          </tr>
+         #foreach($asc in $sc)
+         <tr>
+      <td colspan="5" class="tds"  >
+      <span class="h1_l"><a href="$!webPath/store_$!{asc.store.id}.htm" target="_blank">$!{asc.store.store_name}</a>
+        <input name="store_id" type="hidden" id="store_id" value="$!{asc.store.id}" />
+        </span>
+        </td></tr>
+          #foreach($gc in $asc.gcs)
+          <tr>
+          
+            #if($!gc.goods.goods_main_photo)               
+              #set($img="$!imageWebServer/$!{gc.goods.goods_main_photo.path}/$!{gc.goods.goods_main_photo.name}_small.$!{gc.goods.goods_main_photo.ext}")
+            #else
+              #set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+            #end
+          <td class="tds" class="baby"><a href="$!webPath/goods_$!{gc.goods.id}.htm" target="_blank"><img src="$!img" width="65" height="65" /></a></td>
+          <td class="tds"><p><a href="$!webPath/goods_$!{gc.goods.id}.htm" target="_blank">$!CommUtil.substring("$!{gc.goods.goods_name}",42)</a> 
+              #if($!{gc.goods.group_buy}==2) <span style="color:#F00">(团购)</span> #end
+              #if($!{gc.goods.bargain_status}==2) <span style="color:#F00">(特价)</span> #end
+              #if($!{obj.goods.delivery_status}==2) <span style="color:#F00">[买就送]</span> #end
+              #if($!{gc.cart_type}=="combin")
+              <div class="baby_gp"> 
+                <a href="javascript:void(0);" style="color:#F00;">[组合商品]</a>
+                <div class="baby_group" style="display:none;">
+                  <div class="baby_group_box">
+                    <ul class="group_ul">
+                      #foreach($info in $goodsViewTools.query_combin_goods("$!gc.goods.id"))
+                      <li><a href="$!webPath/goods_$!{info.id}.htm" target="_blank"> 
+                      #if($!info.goods_main_photo) 
+                      	#set($img="$!imageWebServer/$!{info.goods_main_photo.path}/$!{info.goods_main_photo.name}_small.$!{info.goods_main_photo.ext}")
+                       #else
+                        #set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+                       #end <img src="$!img" /></a><span> <a href="$!webPath/goods_$!{info.id}.htm" target="_blank">$!CommUtil.substring("$!info.goods_name",18)</a></span></li>
+                      #end
+                    </ul>
+                  </div>
+                </div>
+                <span class="arrow" style="display:none;"></span> 
+              </div>
+              #end
+              <br/>
+                #foreach($gsp in $obj.gsps)
+                #if($!gsp.spec) <span>$!gsp.spec.name: $!gsp.value</span><br />
+                #end
+                #end </p></td>
+            <td class="tds" align="center">$!gc.price</td>
+            <td class="tds" align="center">$!gc.count</td>
+<!--             #set($total_price=$!gc.count * $!gc.price) -->
+            <td class="tds" align="center"><strong class="orange">¥$!{total_price}</strong></td>
+          </tr>
+          #end
+            #if($velocityCount==1)
+            	#set($total_prices=$!asc.total_price)
+            #else
+            	#set($total_prices=$!total_prices+$!asc.total_price)
+            #end
+          #end
+        </table>
+      </div>
+        <div class="sendmethod">
+          <h2 class="sendmethodtil">
+          <span>配送方式</span>         </h2>
+<!--       <h2>配送方式</h2> -->
+			<div class="pay_infro">
+				<ul class="sendmethodbody" style="height:auto;" >
+					<li>
+							<span>送货<input name="delivery_way" id="delivery_way0" 	class="pay_center_select" type="radio" checked="checked"  onclick="shxx_show();" value="0" /></span>&nbsp;&nbsp; 
+							<span>自提<input name="delivery_way" id="delivery_way1" class="pay_center_select" type="radio" onclick="shxx_hide();" value="1" /></span>
+					</li>
+				</ul>
+			</div>
+      </div>
+      
+        <div class="sendmethod" id="shxx_title">
+          <h2 class="sendmethodtil">
+          <span>收货人地址</span> 
+           <a style="font-size:12px;margin-left:20px;" href="javascript:void(0);" dialog_uri="$!webPath/cart_address.htm?store_id=$!store_id" dialog_title="新增地址" dialog_width="480" dialog_height="100" dialog_id="cart_address">新增地址</a>
+           <a style="font-size:12px;margin-left:20px;" href="$!webPath/buyer/address.htm" target="_blank">管理收货地址</a>
+          </h2>
+          <ul class="sendmethodbody" style="height:auto;" >
+            #set($addr_id="")
+            #foreach($addr in $addrs)
+              #if($!velocityCount==1)
+                #set($default_address_info="$!{addr.area.parent.parent.areaName}$!{addr.area.parent.areaName}$!{addr.area.areaName}$!{addr.area_info}")
+                #set($addr_id="$!{addr.area.id}")
+                #set($default_person_info="$!{addr.trueName} $!{addr.mobile}")
+              #end
+            <li>
+              <label> 
+                <strong>
+                <input type="radio" name="addr_id" value="$!addr.id" #if($!velocityCount==1) checked="checked" #end/>
+                </strong>
+                <span id="address">$!{addr.area.parent.parent.areaName}$!{addr.area.parent.areaName}$!{addr.area.areaName}$!{addr.area_info}</span><span id="person">$!{addr.trueName}</span><span id="mobile">$!{addr.mobile}</span> </label>
+            </li>
+            #end
+<!--             <input type="hidden" name="delivery_way" value="0" /> -->
+          </ul>
+        </div>
+        <div class="sendmethod" id="md_title" style="display:none;" >
+          <h2 class="sendmethodtil">
+          	<span>自提店铺</span>
+          </h2> 
+				<ul class="sendmethodbody" style="height:auto;">
+					<li><select name="pick_store" style="width: 100%;height:25px;" id="pick_store">
+							<option value="">请选择...</option> #foreach($obj in $objs)
+							<option value="$!obj.id">$!obj.store_name</option> #end
+					</select></li>
+				</ul>
+		</div>
+
+        <div class="sendmethod"  >
+        <h2 class="sendmethodtil" ><span>发票信息</span></h2>
+          <ul class="sendmethodbody" style="height:auto;" >
+            <li>
+              <label>
+                <input name="invoiceType" type="radio" value="0" checked="checked" />
+                个人 </label>
+              <label>
+                <input name="invoiceType" type="radio" value="1" />
+                单位 </label>
+            </li>
+            <li id="invoice_info" style="display:none;"><span style="margin-bottom:5px;">发票抬头：</span>
+              <input name="invoice" class="inputclass" type="text" id="invoice" size="40" style="height:20px;" />
+            </li>
+          </ul>
+        </div>
+        #if($couponinfos.size()>0)
+        <div class="sendmethod" >
+        <h2 class="sendmethodtil" ><span>使用优惠券</span></h2>
+          <ul class="sendmethodbody" >
+            <li><span style="margin-bottom:5px;">可用优惠券：</span>
+              <select name="coupon_id" id="coupon_id">
+                <option value="" selected="selected" coupon_amount="0">请选择优惠券</option>
+                    #foreach($info in $couponinfos)
+                <option value="$!info.id" coupon_amount="$!info.coupon.coupon_amount">$!{info.coupon_sn}[$!{info.coupon.coupon_name}]</option>
+                    #end
+              </select>
+            </li>
+          </ul>
+        </div>
+        #end
+<!--        #set($order_total_price=$!CommUtil.null2Float($!{ship_price})+$!{scs.total_price}) -->
+<!--        #set($ship_price=$!total_price) -->
+			#set($order_total_price=$!total_prices)
+         #if($!goods_delivery)
+        <div  class="sendmethod">
+         <h2 class="sendmethodtil"><span>配送方式</span></h2>
+          <ul class="sendmethodbody">
+            <li>
+            <span style="margin-bottom:5px;">可用配送方式：</span>
+            <select name="ship_price" style="width:110px;" id="ship_price">
+<!--             #foreach($sm in $transportTools.query_cart_trans($!sc.id,"$!addr_id")) -->
+<!--               #if($!velocityCount==1) -->
+<!--                 #set($ship_price=$!sm.value) -->
+<!--               #end -->
+<!--               <option value="$!sm.value">$!sm.key</option> -->
+<!--             #end -->
+            </select>
+            <input name="transport" type="hidden" id="transport" value="平邮" />
+            </li>
+          </ul>
+        </div>       
+         #end 
+         <div  class="sendmethod">
+        <h2 style="padding:10px;" ><span>买家附言</span>&nbsp;<input type="text" name="msg" style="width:30%;height:25px;border:1px solid #b0b0b0;"  id="msg"></textarea>
+<!--         <div class="sendmeg"> -->
+          
+<!--         </div> -->
+        <div class="paysend" id="order_coupon_div" style="display:none;">优惠券抵消：<strong class="red" style=" font-size:24px;" id="order_coupon"></strong></div>
+<!--         #set($order_total_price=$!CommUtil.null2Float($!{ship_price})+$!{sc.total_price}) -->
+<!--         <div class="paysend">店铺合计：<strong class="red" style=" font-size:24px;" id="order_store_amount">¥$!{order_total_price}</strong></div> -->
+<!--         <div class="paysend"> -->
+          <div class="paysd">
+            <div class="paysd_box">
+            
+            <span>实付款：<strong></strong><b id="order_pay_fee">¥$!{order_total_price}</b></span>
+              <ul>
+                <li><span id="order_address_info">寄送至:$!default_address_info</span></li>
+                <li><span id="order_person_info">收货人:$!default_person_info</span></li>
+              </ul>
+            </div>
+          </div>
+<!--         </div> -->
+        </h2>
+        </div>
+        <div class="paybtn">
+          <input  name="order_save" type="button"  value="提交订单并支付" onclick="save_order();"  style="cursor:pointer;float:right;" id="order_save;"/>
+          <input name="cart_session" type="hidden" id="cart_session" value="$!cart_session" />
+              <input name="goods_amount" type="hidden" id="goods_amount" value="$!{order_total_price}" />
+        </div>
+      </div>
+    </form>
+  </div>
+  
+ </div>
+$!httpInclude.include("/footer.htm")
+</body>
+</html>

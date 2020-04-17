@@ -1,0 +1,115 @@
+  <div class="top_titile">
+    <div class="nr">
+    	
+      <div class="left">#if($!user)<span class="font_01" >$!CommUtil.substring("$!{user.userName}",12) 您好,欢迎来到 $!CommUtil.substring("$!{config.websiteName}",30)！</span><a href="$!webPath/wemalls_logout.htm" class="lightblue"> 退出 </a> #else<span> 您好，欢迎来到 $!{config.websiteName}！</span><span class="font_01"><a href="$!webPath/user/login.htm" > 登录 </a></span><span class="font_01"> 或 </span><span class="font_01"><a href="$!webPath/register.htm" > 注册 </a></span>#end</div>
+<!--       <div class="left">亲，欢迎来到丝路巴楚！<span class="font_01"><a href="#" target="_blank" >登录</a></span> 或 <a href="#" target="_blank">注册</a></div> -->
+      <div class="header-right">
+        <ul>
+          <li class="my bj"> <a href="$!webPath/buyer/index.htm" >我的订单</a> <i class="ci-right "> <s class="jt">◇</s> </i>
+            <div class="my1">
+              <ul class="neirong2">
+                <li><a href="$!webPath/buyer/order.htm?order_status=order_submit" >待支付</a></li>
+                <li><a href="$!webPath/buyer/order.htm?order_status=order_shipping" >待收货</a></li>
+                <li><a href="$!webPath/buyer/order.htm?order_status=order_receive" >待评价</a></li>
+              </ul>
+            </div>
+          </li>
+           <li class="my bj"> <a href="$!webPath/seller/index.htm">店铺中心</a> <i class="ci-right "> <s class="jt">◇</s> </i>
+            <div class="my1">
+              <ul class="neirong2">
+                <li><a href="$!webPath/seller/index.htm">店铺中心</a></li>
+                <li><a href="$!webPath/seller/order.htm">店铺订单</a></li>
+                <li><a href="$!webPath/seller/goods.htm">店铺商品</a></li>
+                #if($!user.store)
+                <li><a href="$!webPath/store_$!{user.store.id}.htm" rel="nofollow">我的店铺</a></li>
+                #else
+                <li><a href="$!webPath/seller/store_create_first.htm" rel="nofollow">商家入驻</a></li>
+                #end
+              </ul>
+            </div>
+          </li>
+ 		<li class="my bj"><a href="$!webPath/goods_cart1.htm">购物车(<span id="cart_goods_count_top" class="top_car"> $!cart.size() </span>)种商品</a> <i class="ci-right "></i>
+<!--              <div class="menu" id="cart_menu"><span class="menu-hd" id="cart_goods_top_menu"><s></s>购物车<span id="cart_goods_count_top" class="top_car">$!cart.size()</span>种商品<b></b></span> -->
+<!--             <div class="menu-bd" id="cart_goods_top_info"> -->
+<!--              <div class="menu-bd-panel"> -->
+<!--                 <div style="text-align:center;"><img src="$!webPath/resources/style/common/images/loader.gif" /></div> -->
+<!--              </div> -->
+<!--             </div> -->
+<!--           </div> -->
+          </li>
+<!--          #if($!CommUtil.indexOf("$!user.userRole","ADMIN")>=0) -->
+<!-- 		<li class="denglu"><a href="$!webPath/admin/index.htm" target="_blank">管理后台</a></li> -->
+<!-- 		#end -->
+<!--         #set($navs=$!navTools.queryNav(-1,-1)) -->
+<!-- 		#if($!navs.size()>0) -->
+<!--         <li class="denglu"><a href="$!webPath/articlelist.htm">帮助中心</a></li> -->
+<!-- 		#else -->
+		<li class="my bj"> <a href="$!webPath/buyer/account.htm">我的账号</a> <i class="ci-right "> <s class="jt">◇</s> </i>
+            <div class="my1">
+              <ul class="neirong2">
+                <li><a href="$!webPath/buyer/favorite_goods.htm">我的收藏</a></li>
+                <li><a href="$!webPath/buyer/message.htm">消息管理</a></li>
+                <li><a href="$!webPath/buyer/account_password.htm">修改密码</a></li>
+              </ul>
+            </div>
+          </li>
+        <li class="denglu" style="background:none;"><a href="$!webPath/articlelist_98304.htm">帮助中心</a></li>
+<!--         #end -->
+<!--           <li class="denglu"><a href="#">帮助中心</a></li> -->
+<!--           <li class="denglu"><a href="#">帮助中心</a></li> -->
+<!--           <li class="denglu"><a href="#">帮助中心</a></li> -->
+<!--           <li class="denglu"><a href="#">帮助中心</a></li> -->
+<!--           <li class="denglu"><a href="#">帮助中心</a></li> -->
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+   <script>
+		 var goods_count=$!cart.size();
+		 var total_price=0;
+		 #set($total_price=0)
+		 #foreach($gc in $cart)
+		  #if($!gc.goods.group_buy==2)
+		    #set($total_price=$!{gc.goods.group_goods.gg_price}*$!{gc.count}+$total_price)
+		  #else
+		    #set($total_price=$!{gc.goods.store_price}*$!{gc.count}+$total_price)
+		  #end
+		 #end
+		function cart_remove(id,store_id){
+           jQuery.post('$!webPath/remove_goods_cart.htm',{"id":id,"store_id":store_id},function(data){
+           jQuery("div[class=table] tr[id="+id+"]").remove();
+		   jQuery(".wemalls[id="+id+"]").remove();
+		   jQuery(".shopp_ingtop[id="+id+"]").remove();
+           jQuery("#cart_goods_count_top").html(data.count);
+           jQuery("#cart_goods_price_top").html(data.total_price);
+		   jQuery("#top_total_price_"+store_id).html(data.total_price);
+           if(store_id!=""){
+              jQuery("#total_price_"+store_id).html(data.sc_total_price);
+           }
+		   if( jQuery("form[id=cart_"+store_id+"]").find("tr[goods_list^=goods_info]").length==0){
+		  	 jQuery("form[id=cart_"+store_id+"]").remove();
+		   }
+           if(jQuery("tr[goods_list^=goods_info]").length==0){
+              jQuery(".car_nogoods").show();
+           }
+         },"json");
+       }
+	    jQuery(document).ready(function(){
+		   jQuery("#cart_goods_top_menu").mouseover(function(){
+			  jQuery.ajax({type:'POST',url:'$!webPath/cart_menu_detail.htm',data:'',
+						   beforeSend:function(){
+							     jQuery("#cart_goods_top_info").empty().html('<div class="menu-bd-panel"><div style="text-align:center;"><img src="$!webPath/resources/style/common/images/loader.gif" /></div></div>');
+							     jQuery("#cart_goods_top_info").show();
+							   },
+						  success:function(data){
+							     jQuery("#cart_goods_top_info").empty();
+								 jQuery("#cart_goods_top_info").html(data);
+							   }
+						});
+		   });
+		   jQuery("#cart_menu").mouseleave(function(){
+			  jQuery("#cart_goods_top_info").hide();
+		   });
+		});
+	   </script>

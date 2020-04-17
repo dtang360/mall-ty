@@ -1,0 +1,58 @@
+body,div,ul,li,dl,dt,dd,h2,p{padding:0;margin:0;}
+body{ font-family:"΢���ź�"}
+ul{list-style:none ;}
+img{border:none;}
+a{blr:expression(this.onFocus=this.blur());outline:none;text-decoration:none;}
+a:hover{text-decoration:underline;}
+.clearfix:after{content:" ";clear:both;height:0;visibility:hidden;display:block;}
+.clearfix{*zoom:1;}
+.fr { float: right; }
+
+/*����css*/
+.warpper{width:1180px; height:400px; margin:0px auto 0 auto; position:relative;}
+
+
+
+
+/*���Ż*/
+.mod_subcate_side_hotlist{margin-left:4px;}
+.mod_subcate_side_hotlist li{height:20px;font-size:12px;color:#00afc7;overflow:hidden;}
+.mod_subcate_side_hotlist li a{color:#00afc7;}
+
+/*ad*/
+.mod_subcate_gg{display:block;position:absolute;bottom:0;right:0;}
+
+#hdp{ width:740px; height:350px; position: absolute; left:210px; top:51px; }
+#tzgg{ width:218px; height:360px; position: absolute;  left:960px; top:41px; border:1px solid #e4eff0; background:#fff; border-top: none;}
+#tzgg .ewm{ width:146px; height:146px; margin:10px auto 0px auto;}
+#tzgg p{ text-align:center; line-height:30px; font-size:12px;}
+#tzgg .title{ height:32px; border-bottom:1px solid #e4eff0; border-top:1px solid #e4eff0; background: url(../images/ico.png) no-repeat 10px center; text-indent:25px; color:#F60; line-height:32px; font-size:14px; font-weight:bold;}
+#tzgg ul{ margin-top:3px;}
+#tzgg ul li{ line-height:32px; background: url(../images/ico_01.png) no-repeat 10px center; text-indent:20px;}
+
+/*����ͼ*/
+.focus{ position:relative; width:740px; height:350px; background-color: #000; float: left;}  
+.focus img{ width:740px; height: 350px;} 
+.focus .shadow .title{width: 260px; height: 65px;padding-left: 30px;padding-top: 20px;}
+.focus .shadow .title a{ text-decoration:none; color:#fff; font-size:14px; font-weight:bolder; overflow:hidden; }
+.focus .btn{ position:absolute; bottom:34px; left:510px; overflow:hidden; zoom:1;} 
+.focus .btn a{position:relative; display:inline; width:13px; height:13px; border-radius:7px; margin:0 5px;color:#B0B0B0;font:12px/15px "\5B8B\4F53"; text-decoration:none; text-align:center; outline:0; float:left; background:#D9D9D9; }  
+.focus .btn a:hover,.focus .btn a.current{  cursor:pointer;background:#fc114a;}  
+.focus .fPic{ position:absolute; left:0px; top:0px; }  
+.focus .D1fBt{ overflow:hidden; zoom:1;  height:16px; z-index:-1;  }  
+.focus .shadow{ width:100%; position:absolute; bottom:0; left:0px; z-index:-1; height:80px; line-height: 80px; background:rgba(0,0,0,0.6);    
+filter:progid:DXImageTransform.Microsoft.gradient( GradientType = 0,startColorstr = '#80000000',endColorstr = '#80000000')\9;  display:block;  text-align:left; }  
+.focus .shadow a{ text-decoration:none; color:#fff; font-size:20px; overflow:hidden; margin-left:10px; font-family: "\5FAE\8F6F\96C5\9ED1";}  
+.focus .fcon{ position:relative; width:100%; float:left;  display:none; background:#000  }  
+.focus .fcon img{ display:block; }  
+.focus .fbg{bottom:25px; right:40px; position:absolute; height:21px; text-align:center; z-index:0; }  
+.focus .fbg div{margin:4px auto 0;overflow:hidden;zoom:1;height:14px}    
+.focus .D1fBt a{position:relative; display:inline; width:12px; height:12px; border-radius:7px; margin:0 5px;color:#B0B0B0;font:12px/15px "\5B8B\4F53"; text-decoration:none; text-align:center; outline:0; float:left; background:#D9D9D9; }    
+.focus .D1fBt .current,.focus .D1fBt a:hover{background:#fc114a;}    
+.focus .D1fBt img{display:none}    
+.focus .D1fBt i{display:none; font-style:normal; }    
+.focus .prev,.focus .next{position:absolute;width:40px;height:74px;background: url(../images/focus_btn.png) no-repeat;}
+.focus .prev{top: 50%;margin-top: -37px; left: 0;background-position:0 -74px; cursor:pointer; }  
+.focus .next{top: 50%;margin-top: -37px; right: 0;  background-position:-40px -74px;  cursor:pointer;}  
+.focus .prev:hover{  background-position:0 0; }  
+.focus .next:hover{  background-position:-40px 0;}  

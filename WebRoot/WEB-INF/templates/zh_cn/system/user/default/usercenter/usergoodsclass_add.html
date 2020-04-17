@@ -1,0 +1,57 @@
+<link href="$!webPath/resources/style/common/css/window.css" type="text/css" rel="stylesheet" />
+<script>
+jQuery(document).ready(function(){
+  //								
+ jQuery("#theForm").validate({
+	ignore: "",
+    rules:{
+	  className:{required :true}
+	 },
+	messages:{
+	  className:{required :"分类不能为空"}  
+	}
+  });
+ //
+ jQuery("#pid").val("$!obj.parent.id");
+ jQuery(":radio[name=display][value=$!obj.display]").attr("checked",true);
+});
+</script>
+<form  action="$!webPath/seller/usergoodsclass_save.htm" method="post" id="theForm">
+  <table style="float:left;" width="100%" border="0" cellspacing="0" cellpadding="0" class="box_table">
+    <tr>
+      <td width="120" style="text-align:center;"  class="hui_table"><input name="id" type="hidden" id="id" value="$!obj.id" /><strong class="orange fontsize20">*</strong>
+        分类名称:</td>
+      <td align="left"><span class="dia_txt">
+        <input name="className" type="text" style="width:220px;border:1px solid #808080;height: 25px;" id="className" value="$!obj.className" />
+        </span></td>
+    </tr>
+    <tr>
+      <td width="120" style="text-align:center;" class="hui_table">&nbsp;&nbsp;&nbsp;&nbsp;上级分类:</td>
+      <td align="left"><select name="pid" style="width:220px;border:1px solid #808080;height: 25px;" id="pid">
+          <option value="">请选择上级分类</option>
+          #foreach($ugc in $ugcs)
+          <option value="$!ugc.id">$!ugc.className</option>
+		  #end
+        </select></td>
+    </tr>
+    <tr>
+      <td width="120" style="text-align:center;" class="hui_table">&nbsp;&nbsp;&nbsp;&nbsp;分类排序:</td>
+      <td align="left"><span class="dia_txt">
+        <input name="sequence"  style="width:220px;border:1px solid #808080;height: 25px;" type="text" id="sequence" value="$!obj.sequence" />
+        </span></td>
+    </tr>
+    <tr>
+      <td width="120" style="text-align:center;" class="hui_table">&nbsp;&nbsp;&nbsp;&nbsp;显示状态:</td>
+      <td align="left"><input type="radio" name="display" value="true" checked="checked" />
+        &nbsp;是 &nbsp;
+        <input type="radio" name="display" value="false" />
+        &nbsp;否</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="text-align:center" >
+        <input name="" type="submit"  value="提交" style="cursor:pointer;width:100px;height: 25px;"/>
+        <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+      </td>
+    </tr>
+  </table>
+</form>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta name="apple-wap-web-app-capable" content="yes">
+<meta name="apple-wap-web-app-status-bar-style" content="black-translucent">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+	<script
+		src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+</head>
+<script>
+$(document).ready(function(){
+	document.getElementById("ifram").height=document.body.scrollHeight-4;
+	document.getElementById("ifram").width=document.body.clientWidth;
+})
+</script>
+<body class="index_bg">
+	<div class="phone_hd_vr"><div onclick="javascript:history.go(-1);" style="width:100px;height:40px;margin:0 auto;"><img onclick="javascript:history.go(-1);" style="float:left;margin:5px;"  src="$!webPath/resources/style/system/front/wap/images/back.png" width="25" height="25">
+	<span style="float:left;line-height:33px;" onclick="javascript:history.go(-1);" >返回</span></div></div>
+	<div class="main">
+	<iframe id="ifram" src="$!{url}"></iframe> 
+	</div>
+</body>
+</html>

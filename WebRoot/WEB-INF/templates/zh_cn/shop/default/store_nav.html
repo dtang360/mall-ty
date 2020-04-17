@@ -1,0 +1,153 @@
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/public.js"></script>
+<!-- <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>  -->
+<!-- <script src="$!webPath/resources/style/shop/default/js/nav.js"></script> -->
+<script src="$!webPath/resources/style/shop/default/js/jquery.SuperSlide.2.1.1.js" type="text/javascript"></script>
+<script src="$!webPath/resources/style/shop/default/js/head.js" type="text/javascript"></script>
+<script type="text/javascript" src="$!webPath/resources/style/shop/default/js/koala.min.1.5.js"></script>
+<script>
+jQuery(document).ready(function(){
+//   jQuery(".navul a").each(function(){
+//     var original_url=jQuery(this).attr("original_url");
+// 	if("$!{current_url}".indexOf(original_url)>=0){
+// 	   jQuery(this).addClass("this");	
+// 	}
+//   });
+//   jQuery(".left_menu_dl").mouseover(function(){
+// 	    var child_count = jQuery(this).attr("child_count");
+// 		var sc_id=jQuery(this).attr("id");
+// 		var sc_color=jQuery(this).attr("sc_color");		
+// 	    var eq =jQuery(this).index();
+// 		if(jQuery(".left_menu_dd[id=child_"+sc_id+"]").html()==null){
+// 	   	  jQuery.ajax({type:'POST',url:'',data:{"sc_id":sc_id},success:function(data){
+// 		    if(jQuery(".left_menu_dd[id=child_"+sc_id+"]").html()==null){																						
+//       	      jQuery(".left_menu_dt[id=dts_"+sc_id+"]").after(data);
+// 		    }
+// 	        if(child_count>0){
+// 		     jQuery("#dts_"+sc_id).addClass("left_menu_this").removeClass("left_menu_dt");
+// 		     jQuery("#child_"+sc_id).show();			
+// 		    }
+// 	    	jQuery("#left_menu_con_"+sc_id).attr("style","border:1px solid "+sc_color+"; border-left:1px solid "+sc_color+";").find(".menu_con_right_top").css("background-color",sc_color);
+// 	        var z = -35;
+//         	var x = eq*z;
+// 	        jQuery("#left_menu_con_"+sc_id).css('margin-top',x+'px');
+// 		    jQuery(".left_menu_dd[id=child_"+sc_id+"]").show();
+// 	      }});
+// 		}else{
+// 		   if(child_count>0){
+// 		      jQuery("#dts_"+sc_id).addClass("left_menu_this").removeClass("left_menu_dt");
+// 		      jQuery("#child_"+sc_id).show();			
+// 		    }
+// 		    jQuery("#left_menu_con_"+sc_id).attr("style","border:1px solid "+sc_color+"; border-left:1px solid "+sc_color+";").find(".menu_con_right_top").css("background-color",sc_color);
+// 	        var z = -35;
+//     	    var x = eq*z;
+// 	        jQuery("#left_menu_con_"+sc_id).css('margin-top',x+'px');
+// 		    jQuery(".left_menu_dd[id=child_"+sc_id+"]").show();
+// 		}
+		
+//   }).mouseleave(function(e){
+// 	  jQuery("dt[id^=dts_]").removeAttr("style");
+// 	  jQuery("div[id^=left_menu_con_]").removeAttr("style"); 
+// 	  var child_count = jQuery(this).attr("child_count");
+// 　　 　jQuery("dt[id^=dts_]").removeClass("left_menu_this").addClass("left_menu_dt");	  
+// 	  jQuery(".left_menu_dd[id^=child_]").hide();
+//   });
+  jQuery("#navc").mouseover(function(){
+	  jQuery(".tit").show();
+	  
+   });
+  jQuery("#navc").mouseleave(function(){
+	  jQuery(".tit").hide();
+   });		
+});
+
+</script>
+<div id="navc"  >
+        <div class="mod_cate_hd" >全部商品分类</div>
+        <ul class="tit" style="display:none;" >
+               #foreach($gc in $!gcs)
+            #set($icon_img="$!webPath/resources/style/common/images/icon/default_icon.png")
+        		    #if($!gc.icon_type==0)
+		                #if($!gc.icon_sys!="")
+		                #set($icon_img="$!webPath/resources/style/common/images/icon/icon_$!{gc.icon_sys}.png")
+		                #end
+	                #else
+		                #if($!gc.icon_acc)
+		                #set($icon_img="$!webPath/$!gc.icon_acc.path/$!gc.icon_acc.name")
+		                #end
+	                #end 
+          <li class="mod_cate">
+            <h2><i class="arrow_dot fr"></i><a href="$!webPath/store_goods_list_$!{gc.id}.htm">$!gc.className</a></h2>
+            <p class="mod_cate_r">
+             #foreach($gc1 in $gc.childs)
+	                #if($!gc1.display)
+            <a href="$!webPath/store_goods_list_$!{gc1.id}.htm">$!gc1.className</a>
+            		#end
+			#end
+            </p>
+            <div class="mod_subcate">
+              <div class="mod_subcate_main">
+                <dl>
+                  <dt>热门推荐</dt>
+							<dd>
+								#foreach($gcn in $gc.childs) 
+									#if($!gcn.display) 
+										<a href="$!webPath/store_goods_list_$!{gcn.id}.htm">$!gcn.className</a>
+									#end 
+								#end
+							</dd>
+						</dl>
+						#foreach($gc1 in $gc.childs) 
+							#if($!gc1.display)
+							<div class="mod_subcate_channel">
+								#foreach($gc2 in $gc1.childs) 
+									#if($!gc2.display) 
+								<a class="mod_btn_arrow" href="$!webPath/store_goods_list_$!{gc2.id}.htm"><b>$!gc2.className</b><i class="arrow_dot"></i></a>
+								    #end 
+								#end 
+						</div>
+							#end 
+						#end 
+					</div>
+            </div>
+          </li>
+          #end
+        </ul>
+      </div>
+      <div class="menu">
+        <ul>
+			#set($navs=$!navTools.queryNav(0,-1)) 
+			#foreach($nav in $navs)
+				#if($!CommUtil.indexOf("$!nav.url","http://")>=0)
+				#set($url="$!nav.url") 
+					#else 
+					#set($url="$!webPath/$!{nav.url}") 
+				#end
+				<li><a href="$url">$!{nav.title}</a></li>
+			#end
+			    <li> <a href="$!webPath/store_$!{store.id}.htm" >店铺首页</a></li>
+			    #if($!{goods_view}==true)
+			    <li><a href="$!webPath/goods_$!{goods_id}.htm">商品详情</a></li>
+			    #end
+			    #if($!{goods_list}==true)
+			    <li><a href="$!webPath/goods_list.htm?store_id=$!{store.id}">商品列表</a></li>
+			    #end
+			    #foreach($nav in $navs)
+			    #set($url="$!webPath/store_url.htm?id=$!{nav.id}")
+			    #if($!{nav.url}&&$!{nav.url}!="") 
+			      #set($url="$!nav.url")
+			    #end
+			    <li><a href="$!url" #if($!nav.win_type=="new_win") target="_blank" #end>$!nav.title</a></li>
+			    #end
+        </ul>
+      </div>
+<script type="text/javascript">
+$("#navc .tit").slide({
+	type:"menu",
+	titCell:".mod_cate",
+	targetCell:".mod_subcate",
+	delayTime:0,
+	triggerTime:10,
+	defaultPlay:false,
+	returnDefault:true
+});
+</script> 

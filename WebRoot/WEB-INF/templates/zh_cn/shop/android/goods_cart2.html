@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta
+	content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no"
+	name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black-translucent"
+	name="apple-mobile-web-app-status-bar-style">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css"
+	rel="stylesheet" type="text/css">
+<script
+	src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+<script
+	src="$!webPath/resources/style/system/front/wap/js/jquery.validate.min.js"></script>
+<script>
+		var addr_id = "";
+		jQuery(document).ready(function() {
+			jQuery(" li[id^=dis_]").hide();
+			jQuery("#times").focus(function() {
+				jQuery("#days_check").show();
+			});
+
+			addr_id = jQuery(":radio[name^=addr_id]:checked").val();
+
+			// 选择配送地点
+			jQuery(":radio[name^=addr_id]").click(function(){
+			       addr_id=jQuery(this).val();
+				   jQuery.ajax({type:'POST',url:'$!webPath/order_address.htm',data:{'addr_id':addr_id,"store_id":"$!sc.store.id"},dataType:'json',
+							  beforeSend:function(){
+								    jQuery("#order_save").attr("disabled",true);
+							  }, 
+							  success:function(data){
+				                 jQuery("#ship_price").empty();
+								 jQuery(data).each(function(index,item){
+								     jQuery("#ship_price").append("<option value='"+item.value+"'>"+item.key+"</option>");
+								 });
+							     var ship_price=parseFloat(jQuery("#ship_price").val());
+								 if(isNaN(ship_price)){
+								    ship_price=0; 
+								 }
+				                 var coupon_amount=parseFloat(jQuery("#coupon_id").find("option:selected").attr("coupon_amount"));
+								 if(isNaN(coupon_amount)){
+								   coupon_amount=0;
+								 }
+				                 var goods_amount=parseFloat(jQuery("#goods_amount").val());
+				                 var order_fee=goods_amount-coupon_amount+ship_price;
+				                 jQuery("#order_store_amount").html("¥"+order_fee);
+				                 jQuery("#order_pay_fee").html("¥"+order_fee); 
+								 jQuery("#order_save").attr("disabled",false);
+							  }
+				   });
+			});
+			
+			// 选择配送方式：选择快递
+			jQuery("#ship_price").change(function(){
+			     var ship_price=parseFloat(jQuery(this).val());
+				 if(isNaN(ship_price)){
+					 ship_price=0; 
+				 }
+				 var coupon_amount=parseFloat(jQuery("#coupon_id").find("option:selected").attr("coupon_amount"));
+				 if(isNaN(coupon_amount)){
+					 coupon_amount=0;
+				  }
+				 var goods_amount=parseFloat(jQuery("#goods_amount").val());
+				 var order_fee=goods_amount-coupon_amount+ship_price;
+				 jQuery("#order_store_amount").html("¥"+order_fee);
+				 jQuery("#order_pay_fee").html("¥"+order_fee); 
+				 var text=jQuery(this).find("option:selected").text();
+				 var transport=text.substring(0,text.indexOf("["));
+				 jQuery("#transport").val(transport);
+			});
+			
+			// 优惠券
+			jQuery("#coupon_id").change(function(){
+			      var coupon_amount=parseFloat(jQuery(this).find("option:selected").attr("coupon_amount"));
+				  if(isNaN(coupon_amount)){
+					 coupon_amount=0;
+				  }
+				  var goods_amount=parseFloat(jQuery("#goods_amount").val());
+				  jQuery("#order_coupon_div").show();
+				  var coupon_info="-¥"+coupon_amount;
+				  jQuery("#order_coupon").html(coupon_info);
+				  var ship_price=parseFloat(jQuery("#ship_price").val());
+				  if(isNaN(ship_price)){
+					  ship_price=0; 
+				  }
+				  var order_fee=goods_amount-coupon_amount+ship_price;
+				  jQuery("#order_store_amount").html("¥"+order_fee);
+				  jQuery("#order_pay_fee").html("¥"+order_fee);
+				  if(coupon_amount==0){
+				    jQuery("#order_coupon_div").hide();
+				  }
+			});
+			
+		});
+		
+		function save_order() {
+			var save_flg = false;
+			var invoice_save = true;
+// 			var dwv=jQuery("#delivery_way").val();
+			var dwv=$("input[name='delivery_way'][checked]").val();
+			//配送
+			if(dwv==0){
+				if(!addr_id || typeof(addr_id)=="undefined" || addr_id==""){
+					alert("请您先添加一个收货地址!");
+					save_flg=false;
+					return;
+				} else {
+					save_flg = true;
+				}	
+		    //自提
+			}else if(dwv==1){
+				var psv=jQuery("#pick_store").val();
+				if(!psv || typeof(psv)=="undefined" || psv==""|| isNaN(psv)){
+					alert("请选择自提店铺!");
+					save_flg=false;
+					return;
+				} else {
+					save_flg = true;
+				}	
+			}
+			
+// 			if(!addr_id || typeof(addr_id)=="undefined" || addr_id==""){
+// 				alert("请您先添加一个收货地址!");
+// 				return;
+// 			} else {
+// 				addr_save = true;
+// 			}
+			if (save_flg) {
+				jQuery("#cart_form").submit();
+			}
+		}
+
+		function choose_day() {
+			jQuery("#form_div").hide();
+			jQuery("#day_div").show();
+		}
+		
+		function shxx_hide(){
+			jQuery("#shxx_title").hide();
+			jQuery("#shxx").hide();
+			jQuery("#ship_price_div").hide();
+			jQuery("#md").show();
+			jQuery("#md_title").show();
+			$("#delivery_way1").attr("checked","checked");
+			$("#delivery_way0").removeAttr("checked");
+			jQuery("#order_pay_fee_all").hide();
+			jQuery("#order_pay_fee").show();
+			jQuery("#order_store_amount_all").hide();
+			jQuery("#order_store_amount").show();
+		}
+		
+		function shxx_show(){
+			jQuery("#shxx_title").show();
+			jQuery("#shxx").show();
+			jQuery("#ship_price_div").show();
+			jQuery("#md").hide();
+			jQuery("#md_title").hide();
+			$("#delivery_way0").attr("checked","checked");
+			$("#delivery_way1").removeAttr("checked");
+			jQuery("#order_pay_fee_all").show();
+			jQuery("#order_pay_fee").hide();
+			jQuery("#order_store_amount_all").show();
+			jQuery("#order_store_amount").hide();
+		}
+		
+		
+		function choose_ship() {
+			jQuery("#form_div").hide();
+			jQuery("#ship_div").show();
+		}
+		function choose_pay() {
+			jQuery("#form_div").hide();
+			jQuery("#pay_div").show();
+		}
+		function submit_day() {
+			var time = jQuery(":radio[id=hdelivery_time]:checked").val();
+			jQuery("#delivery_time").val(time);
+			jQuery("#delivery_time_html").html(time);
+			jQuery("#day_div").hide();
+			jQuery("#form_div").show();
+		}
+		function submit_ship() {
+			var addr = jQuery(":radio[id=delivery_address]:checked").attr("mark");
+			if (addr != undefined) {
+				jQuery("#ship_html").html("快递配送,自提:" + addr);
+			}
+
+			jQuery("#ship_div").hide();
+			jQuery("#form_div").show();
+		}
+		function submit_fp() {
+			var fp = jQuery(":radio[id=invoiceType]:checked").attr("mark");
+			jQuery("#fp_html").html(fp);
+			jQuery("#fp_div").hide();
+			jQuery("#form_div").show();
+		}
+		function checked_day(arg) {
+			jQuery("#times").val(arg);
+			jQuery("#hdetime").find("input[type=radio]").val(arg);
+			jQuery("#days_check").hide();
+		}
+		function choose_fp() {
+			jQuery("#form_div").hide();
+			jQuery("#fp_div").show();
+		}
+		function invoice_save() {
+			var invoice = jQuery("#invoice").val();
+			var invoiceType = jQuery(":radio[id=invoiceType]:checked").val();
+			jQuery.ajax({
+				type : 'POST',
+				url : '$!webPath/invoice_save.htm',
+				data : {
+					"invoice" : invoice,
+					"invoiceType" : invoiceType
+				},
+				success : function() {
+					alert("保存成功");
+				}
+			});
+		}
+	</script>
+</head>
+<body>
+	<div class="phone_hd">
+		<a class="back" href="javascript:history.go(-1);"><img
+			src="$!webPath/resources/style/system/front/wap/images/back.png"
+			width="25" height="25"></a>填写订单 <a class="menu home"
+			href="$!webPath/android/index.htm"><img
+			src="$!webPath/resources/style/system/front/wap/images/home.png"
+			width="25" height="25"></a>
+	</div>
+	<div class="mt50"></div>
+	<form action="$!webPath/goods_cart3.htm" method="post"
+		enctype="$!webPath/goods_cart3.htm" id="cart_form">
+		<input name="store_id" type="hidden" id="store_id" value="$!{sc.store.id}" /> 
+		<input name="cart_session" type="hidden"  id="cart_session" value="$!cart_session" /> 
+		<input name="goods_amount" type="hidden" id="goods_amount" 	value="$!{sc.total_price}" />
+
+		<div class="fill_order" id="form_div">
+			<h2>配送方式</h2>
+			<div class="pay_infro">
+				<ul>
+					<li>
+						<!-- 						<span class="fl">支付方式 <span class="gray">   --> <label>
+							<span>送货<input name="delivery_way" id="delivery_way0" 	class="pay_center_select" type="radio" checked="checked"  onclick="shxx_show();" value="0" /></span>&nbsp;&nbsp; 
+							<span>自提<input name="delivery_way" id="delivery_way1" class="pay_center_select" type="radio" onclick="shxx_hide();" value="1" /></span>
+					</label>
+					</li>
+					<!-- 					<li> -->
+					<!-- 						<span class="fl">支付方式 <span class="gray">   -->
+					<!-- 						<label>  -->
+					<!-- 						<span> <input name="payType" class="pay_center_select" type="radio" checked="checked" value="onlinepay"></span> -->
+					<!-- 						<i>在线支付</i> -->
+					<!-- 						</label> -->
+					<!-- 						</span> -->
+					<!-- 						</span> -->
+					<!-- 					</li> -->
+				</ul>
+			</div>
+			<h2 id="shxx_title">收货信息</h2>
+			<div id="shxx" class="phone_address add_bd">
+				#if($!addrs.size()>0)
+				<ul class="order_ul">
+					#set($addr_id="") 
+					#foreach($addr in $addrs) 
+					#if($!velocityCount==1)
+					#set($default_address_info="$!{addr.area.parent.parent.areaName}$!{addr.area.parent.areaName}$!{addr.area.areaName}$!{addr.area_info}")
+					#set($addr_id="$!{addr.area.id}")
+					#set($default_person_info="$!{addr.trueName} $!{addr.mobile}") #end
+					<li class="tel"><input type="radio" name="addr_id"
+						value="$!addr.id" #if($!velocityCount==1) #end />
+						$!{addr.trueName}<span>$!{addr.mobile}</span></li>
+					<li class="site">$!{addr.area.parent.parent.areaName}$!{addr.area.parent.areaName}$!{addr.area.areaName}$!{addr.area_info}</li>
+					#end
+				</ul>
+				<a href="$!webPath/address.htm"
+					class="more"> <img width="30" height="30"
+					src="$!webPath/resources/style/system/front/wap/images/other_arrow.png">
+				</a> #else
+				<div class="addr_none">
+					<span><img
+						src="$!webPath/resources/style/system/front/wap/images/car_none.jpg"></span><b>收货地址还没有，去添加您的收货地址吧</b>
+				</div>
+				<div class="addr_none_btn">
+					<input type="button"
+						onclick="javascript:window.location.href='$!webPath/cart_address.htm?store_id=$!store_id&currentPage=$!webPath/goods_cart2.htm'"
+						value="添加">
+				</div>
+				#end
+			</div>
+			<div id="ship_price_div" class="pay_infro">
+			<span class="fl">运费:&nbsp;&nbsp; </span>
+			<select name="ship_price" style="width: 110px;" id="ship_price">
+						#set($ship_price=0) 
+						#foreach($asc in $sc)
+						#foreach($sm in $transportTools.query_cart_trans($!asc,"$!addr_id"))
+							#if($!velocityCount==1)
+							#set($ship_price=$!sm.value) 
+							#end
+				 <option value="$!sm.value">$!sm.key</option> 
+				 		#end
+				 		#end
+			</select>
+			</div>
+			 <input name="transport" type="hidden" id="transport" value="平邮" />
+			<h2 id="md_title" style="display: none;" >自提店铺</h2>
+			<div id="md" class="pay_infro" style="display: none;">
+				<ul>
+					<li><select name="pick_store" style="width: 100%;" id="pick_store">
+							<option value="">请选择...</option> #foreach($obj in $objs)
+							<option value="$!obj.id">$!obj.store_name</option> #end
+					</select></li>
+				</ul>
+			</div>
+
+			<!-- 			<h2>支付方式</h2> -->
+			<!-- 			<div class="pay_infro"> -->
+			<!-- 				<ul> -->
+			<!-- 					<li> -->
+			<!-- 					<label> -->
+			<!-- 							<span>在线支付<input name="pay_type" class="pay_center_select" -->
+			<!-- 								type="radio" checked="checked" value="0"></span>&nbsp;&nbsp; -->
+			<!-- 							<span>货到付款<input name="pay_type" class="pay_center_select" -->
+			<!-- 								type="radio" value="1"></span>&nbsp;&nbsp; <span>付现<input -->
+			<!-- 								name="pay_type" class="pay_center_select" type="radio" -->
+			<!-- 								value="2"></span> -->
+			<!-- 					</label> </span> </span> -->
+			<!-- 					</li> -->
+			<!-- 				</ul> -->
+			<!-- 			</div> -->
+
+			<div class="pay_shop" style="margin-bottom: 55px;" >
+				<h3>
+					<span class="fl"><img width="25" height="25"
+						src="$!webPath/resources/style/system/front/wap/images/shop.png"></span>
+					<!-- $!{sc.store.store_name}  -->
+				</h3>
+				<ul>
+				#foreach($asc in $sc)
+					#foreach($gc in $asc.gcs)
+					<li><a href="$!webPath/goods_$!{gc.goods.id}.htm">
+							<div class="com_li">
+								<span class="img"><img width="60" height="60"
+									src="$!imageWebServer/$!gc.goods.goods_main_photo.path/$!{gc.goods.goods_main_photo.name}_small.$!{gc.goods.goods_main_photo.ext}"></span><span
+									class="mid">
+									<p class="name">$!CommUtil.substring("$!{gc.goods.goods_name}",42)
+									</p>
+									<p class="gray"></p>
+									<p class="red">
+										#if($!{gc.goods.group_buy}==2) <span style="color: #F00">(团购)</span>
+										#end #if($!{gc.goods.bargain_status}==2) <span
+											style="color: #F00">(特价)</span> #end
+										#if($!{gc.goods.delivery_status}==2) <span style="color: #F00">[买就送]</span>
+										#end
+									</p>
+								</span><span class="fr">
+									<p class="red">¥$!gc.price</p>
+									<p>X$!gc.count</p> #set($total_price = $!CommUtil.null2Float($!{gc.price})*$!{gc.count}) 
+									<p>小计:¥$!{total_price}</p>
+								</span>
+							</div>
+					</a></li> #end
+					#end
+				</ul>
+
+				<ul class="check_ul">
+							            <li>
+							            	<span class="fl">
+									            <select name="coupon_id" id="coupon_id">
+									                <option value="" selected="selected" coupon_amount="0">--选择优惠券--</option>
+									                    #foreach($info in $couponinfos)
+									                <option value="$!info.id" coupon_amount="$!info.coupon.coupon_amount">$!{info.coupon_sn}[$!{info.coupon.coupon_name}]</option>
+									                    #end
+									            </select>
+							              	</span>
+							            </li>
+					<li>给商家留言 <input type="text" id="msg" name="msg"
+						style="width: 70%;">
+					</li>
+				</ul>
+				<div class="money">
+					<p></p>
+					#foreach($asc in $sc)
+						#set($order_total_price_all=$!CommUtil.null2Float($!{ship_price})+$!{asc.total_price})
+					#end
+					<p>
+						店铺合计费用：<span price="$!{order_total_price}"  style="display:none;" id="order_store_amount"
+							class="red">¥$!{sc.total_price}</span>
+							<span price="$!{order_total_price}" id="order_store_amount_all"
+							class="red">¥$!{order_total_price_all}</span>
+					</p>
+				</div>
+			</div>
+
+			<div class="total_price" id="order_coupon_div" style="display: none;">
+				<table cellpadding="0" cellspacing="0">
+					<tbody>
+						<tr>
+							<td width="50%" align="left">优惠券抵消：</td>
+							<td align="right"><span class="red" id="order_coupon"
+								style="font-size: 24px;"></span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="car_pay order_tt" style="margin-bottom: 55px;">
+				<div class="total">
+					总计：<span class="red" style="display:none;" id="order_pay_fee">¥$!{order_total_price_all}</span><span class="red"  id="order_pay_fee_all">¥$!{order_total_price_all}</span>
+				</div>
+				<a class="paymen_btn" href="javascript:void(0);"
+					onclick="save_order();">提交订单</a>
+			</div>
+		</div>
+	</form>
+	$!httpInclude.include("/footer.htm")
+</body>
+</html>

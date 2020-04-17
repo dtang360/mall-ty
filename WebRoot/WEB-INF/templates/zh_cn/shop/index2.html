@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/zzsc.css" rel="stylesheet" type="text/css">
+<script src="$!webPath/resources/style/shop/default/js/jquery1.42.min.js" type="text/javascript"></script>
+<script src="$!webPath/resources/style/shop/default/js/jquery.SuperSlide.2.1.1.js" type="text/javascript"></script>
+<script src="$!webPath/resources/style/shop/default/js/head.js" type="text/javascript"></script>
+<script type="text/javascript" src="$!webPath/resources/style/shop/default/js/koala.min.1.5.js"></script>
+
+<script  type="text/javascript" >
+function search_form(){
+  var keyword=arguments[0];
+  var type=arguments[1];
+  if(keyword!=""&&keyword!=undefined){
+   jQuery("#keyword").val(keyword);
+  }
+  if(type!=""&&type!=undefined){
+    jQuery("#type").val(type);
+  }
+  jQuery("#searchForm").submit();	
+  jQuery("#keyword").val("");
+}
+</script>
+
+</head>
+<body>
+<div class="wfull">
+$!httpInclude.include("/top.htm")
+  <div class="wrap1180">
+$!httpInclude.include("/head.htm")
+    <!-- 导航 开始 -->
+        <div class="warpper">
+$!httpInclude.include("/nav.htm")
+    <!-- 导航 结束 --> 
+     <div id="hdp"><!-- 代码 开始 -->
+        <div id="fsD1" class="focus" >
+          <div id="D1pic1" class="fPic">
+            <div class="fcon" style="display: none;"> <a target="_blank" href="#"><img src="$!webPath/resources/style/shop/default/images/01.jpg" style="opacity: 1; "></a> </div>
+<!--             <div class="fcon" style="display: none;"> <a target="_blank" href="#"><img src="$!webPath/resources/style/shop/default/images/02.jpg" style="opacity: 1; "></a> </div> -->
+<!--             <div class="fcon" style="display: none;"> <a target="_blank" href="#"><img src="$!webPath/resources/style/shop/default/images/03.jpg" style="opacity: 1; "></a> </div> -->
+            <div class="fcon" style="display: none;"> <a target="_blank" href="#"><img src="$!webPath/resources/style/shop/default/images/04.jpg" style="opacity: 1; "></a> </div>
+          </div>
+          <div class="fbg">
+            <div class="D1fBt" id="D1fBt"> 
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class="current"><i>1</i></a>
+<!--             <a href="javascript:void(0)" hidefocus="true" target="_self" class=""><i>2</i></a>  -->
+<!--             <a href="javascript:void(0)" hidefocus="true" target="_self" class="current"><i>3</i></a>  -->
+            <a href="javascript:void(0)" hidefocus="true" target="_self" class=""><i>4</i></a> </div>
+          </div>
+          <span class="prev"></span> <span class="next"></span> </div>
+        <script type="text/javascript">
+	Qfast.add('widgets', { path: "$!webPath/resources/style/shop/default/js/terminator2.2.min.js", type: "js", requires: ['fx'] });  
+	Qfast(false, 'widgets', function () {
+		K.tabs({
+			id: 'fsD1',   //焦点图包裹id  
+			conId: "D1pic1",  //** 大图域包裹id  
+			tabId:"D1fBt",  
+			tabTn:"a",
+			conCn: '.fcon', //** 大图域配置class       
+			auto: 1,   //自动播放 1或0
+			effect: 'fade',   //效果配置
+			eType: 'click', //** 鼠标事件
+			pageBt:true,//是否有按钮切换页码
+			bns: ['.prev', '.next'],//** 前后按钮配置class                          
+			interval: 3000  //** 停顿时间  
+		}) 
+	})  
+</script> 
+        <!-- 代码 结束 --></div>
+      <div id="tzgg">
+        <div class="ewm"><img src="$!webPath/resources/style/shop/default/images/ewm.png" width="146" height="146" /></div>
+        <p>扫一扫 关注微信</p>
+        <div class="title">公告</div>
+        <ul class="font_05">
+		  		             	#foreach($article in $articles)
+			            #if($!article.url!="")
+			            #set($url="$!article.url")
+			            #else
+			            #set($url="$!webPath/article_$!{article.id}.htm")
+			            #end
+			<li><a href="$!url" target="_blank">$!CommUtil.formatShortDate($!article.addTime) $!CommUtil.substring("$!article.title",9)</a></li>
+          #end
+        </ul>
+      </div>
+  </div>
+<script type="text/javascript">
+$("#nav .tit").slide({
+	type:"menu",
+	titCell:".mod_cate",
+	targetCell:".mod_subcate",
+	delayTime:0,
+	triggerTime:10,
+	defaultPlay:false,
+	returnDefault:true
+});
+</script> 
+    <!--内容部分 开始-->
+            <div class="conent" >
+      <div class="title"> <span class="fl"><img src="$!webPath/resources/style/shop/default/images/fl_01.png" width="32" height="17" /></span> <span class="bt">商品</span>
+<!--        <span class="bq font_03"><a href="#" target="_blank">甜点饮品</a>&nbsp;&nbsp; <a href="#" target="_blank">火锅</a> &nbsp;&nbsp;<a href="#" target="_blank">自助餐</a> &nbsp;&nbsp;<a href="#" target="_blank">小吃快餐</a>&nbsp;&nbsp; <a href="#" target="_blank">日韩料理</a>&nbsp;&nbsp; <a href="#" target="&nbsp;">西餐</a> &nbsp;&nbsp;<a href="#" target="_blank">聚餐宴请</a> &nbsp;&nbsp;<a href="#" target="_blank">烧烤烤肉</a>&nbsp;&nbsp; <a href="#" target="_blank">东北菜</a> &nbsp;&nbsp;<a href="#" target="_blank">川湘菜</a></span>  -->
+       <span class="et"><a href="$!webPath/store_goods_list_50.htm" target="_blank" >更多>></a></span> <span class="bt"></span>
+       </div>
+      <div class="mun"> <img src="$!webPath/resources/style/shop/default/images/ad.png" width="198" height="198" />
+        <ul>
+          <h1 class="font_03"><a href="javascript:search_form('水果','goods');">水果</a></h1>
+          <p class="font_02"><a href="javascript:search_form('苹果','goods');">接待中心</a>&nbsp;&nbsp; <a href="javascript:search_form('香蕉','goods');">香蕉</a></p>
+          <h1 class="font_03"><a href="javascript:search_form('干果','goods');">干果</a></h1>
+<!--           <p class="font_02"><a href="javascript:search_form('胡杨岛景区','goods');">胡杨岛景区</a>&nbsp;&nbsp; <a href="javascript:search_form('胡杨博物馆','goods');">胡杨博物馆</a></p> -->
+<!--           <h1 class="font_03"><a href="javascript:search_form('红水湾','goods');">红水湾</a></h1> -->
+<!--           <p class="font_02"><a href="javascript:search_form('石鸭子湾','goods');">石鸭子湾</a>&nbsp;&nbsp; <a href="javascript:search_form('狮子口','goods');">狮子口</a> &nbsp;&nbsp;<a href="javascript:search_form('大岩洞','goods');">大岩洞</a></p> -->
+<!--           <h1 class="font_03"><a href="javascript:search_form('巴楚全景','goods');">巴楚全景</a></h1> -->
+<!--           <p class="font_02"><a href="javascript:search_form('文化路转盘','goods');">文化路转盘</a>&nbsp;&nbsp;<a href="javascript:search_form('民族特色风情街','goods');">民族特色风情街</a></p> -->
+        </ul>
+      </div>
+      <div class="img" style="height:auto;" >
+       #foreach($!goods in $xinShangs)
+	        #if($!goods.goods_main_photo)
+	        	#set($img="$!imageWebServer/$!{goods.goods_main_photo.path}/$!{goods.goods_main_photo.name}_small.$!{goods.goods_main_photo.ext}")
+	        #else
+	        	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+	        #end
+	        #set($goods_url="$!webPath/goods_$!{goods.id}.htm")
+	        #if($!config.second_domain_open)
+	        	#set($goods_url="http://$!{goods.goods_store.store_second_domain}.$!{domainPath}/goods_$!{goods.id}.htm")
+	    	#end   
+        <div class="pic">
+          <div class="bq1"><img src="$!webPath/resources/style/shop/default/images/bq11.png" width="43" height="40" /></div>
+          #if($!goods.store_recommend=='true')
+          <div class="bq2"><img src="$!webPath/resources/style/shop/default/images/bq21.png" width="43" height="40" /></div>
+          #end
+          <a href="$!goods_url" target="_blank" ><img src="$!img"  width="223" height="223" /></a>
+          <h1><a href="$!goods_url" target="_blank">$!CommUtil.substring("$!goods.goods_name",13)</a></h1>
+          	<p class="font_02">
+				 #if($!goods.group_buy==2)<span style="padding:3px 3px;color:#FFF;background:#F00">团购</span>#end
+               	 #if($!goods.activity_status==2)<span style="padding:3px 3px;color:#FFF;background:#F00">活动</span>#end
+               	 #if($!goods.bargain_status==2)<span style="padding:3px 3px;color:#FFF;background:#F00">特价</span>#end
+               	 #if($!goods.combin_status==2)<span style="padding:3px 3px;color:#FFF;background:#F00">组合</span>#end
+               	 #if($!goods.delivery_status==2)<span style="padding:3px 3px;color:#FFF;background:#F00">买就送</span>#end
+			</p>
+          <dd><span class="jq font_04">¥$!{goods.goods_current_price}</span><span class="yjq">门店价:¥$!{goods.goods_current_price}</span><span class=" sl">已售:$!{goods.goods_salenum}</span>
+            <div class="clear"></div>
+          </dd>
+        </div>
+        #end
+      </div>
+      <div class="clear"></div>
+    </div>
+     <!--内容部分 结束--> 
+    <!--资讯部分 开始-->
+<!--     <div class="nTab" style="margin-top:8px;"> -->
+<!--       <div class="titlea" > -->
+<!--         <div class="TabTitle"> -->
+<!--           <ul id="myTab"> -->
+<!--             <li class="active" onClick="nTabs(this,0);">巴楚</li> -->
+<!--             <li class="normal" onClick="nTabs(this,1);">规划</li> -->
+<!--             <li class="normal" onClick="nTabs(this,2);">信息</li> -->
+<!--             <li class="normal" onClick="nTabs(this,3);">导览</li> -->
+<!--           </ul> -->
+<!--         </div> -->
+<!--       </div> -->
+<!--       <div class="TabContent"> -->
+<!--         <div id="myTab_Content0"> -->
+<!--          #foreach($obj in $articles1) -->
+<!-- 		              #if($!obj.firstImgUrl) -->
+<!-- 		              	#set($img="$!{obj.firstImgUrl}") -->
+<!-- 		              #else -->
+<!-- 		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}") -->
+<!-- 		              #end -->
+<!-- 		              	#set($goods_url="$!webPath/article_$!{obj.id}.htm") -->
+		              	
+<!--           <div class=" mod_01 left" style="margin-right:13px;"> -->
+<!--             <div class="img"><img src="$!img" width="210" height="240" /></div> -->
+<!--             <div class="txt"> -->
+<!--               <h1><a href="#" target="_blank">$!CommUtil.substring("$!obj.title",26)</a></h1> -->
+<!--               <dd>$!CommUtil.substring("$!obj.mark",45)<a href="$!goods_url" target="_blank">【详细】</a></dd> -->
+<!--               <p></p> -->
+<!--             </div> -->
+<!--           </div> -->
+<!--            #end -->
+<!--         </div> -->
+<!--         <div id="myTab_Content1" class="none"> -->
+<!--          #foreach($obj in $articles2) -->
+<!-- 		              #if($!obj.firstImgUrl) -->
+<!-- 		              	#set($img="$!{obj.firstImgUrl}") -->
+<!-- 		              #else -->
+<!-- 		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}") -->
+<!-- 		              #end -->
+<!-- 		              	#set($goods_url="$!webPath/article_$!{obj.id}.htm") -->
+		              	
+<!--           <div class=" mod_01 left" style="margin-right:13px;"> -->
+<!--             <div class="img"><img src="$!img" width="210" height="240" /></div> -->
+<!--             <div class="txt"> -->
+<!--               <h1><a href="#" target="_blank">$!CommUtil.substring("$!obj.title",26)</a></h1> -->
+<!--               <dd>$!CommUtil.substring("$!obj.mark",45)<a href="$!goods_url" target="_blank">【详细】</a></dd> -->
+<!--               <p></p> -->
+<!--             </div> -->
+<!--           </div> -->
+<!--            #end -->
+<!--         </div> -->
+<!--         <div id="myTab_Content2" class="none"> -->
+<!--          #foreach($obj in $articles3) -->
+<!-- 		              #if($!obj.firstImgUrl) -->
+<!-- 		              	#set($img="$!{obj.firstImgUrl}") -->
+<!-- 		              #else -->
+<!-- 		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}") -->
+<!-- 		              #end -->
+<!-- 		              	#set($goods_url="$!webPath/article_$!{obj.id}.htm") -->
+		              	
+<!--           <div class=" mod_01 left" style="margin-right:13px;"> -->
+<!--             <div class="img"><img src="$!img" width="210" height="240" /></div> -->
+<!--             <div class="txt"> -->
+<!--               <h1><a href="#" target="_blank">$!CommUtil.substring("$!obj.title",26)</a></h1> -->
+<!--               <dd>$!CommUtil.substring("$!obj.mark",45)<a href="$!goods_url" target="_blank">【详细】</a></dd> -->
+<!--               <p></p> -->
+<!--             </div> -->
+<!--           </div> -->
+<!--            #end -->
+<!--         </div> -->
+<!--       </div> -->
+<!--       <div class="clear"></div> -->
+<!--     </div> -->
+</div>
+<div class="clear"></div>
+$!httpInclude.include("/footer.htm")
+</body>
+</html>

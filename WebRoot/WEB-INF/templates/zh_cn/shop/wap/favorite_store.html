@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta name="apple-wap-web-app-capable" content="yes">
+<meta name="apple-wap-web-app-status-bar-style" content="black-translucent">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+<link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/system/front/default/css/user.css" type="text/css" rel="stylesheet" />
+<script src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+<script>
+jQuery(document).ready(function(e) {
+    
+// 	var status = '$!{ac.id}';
+    
+//     if(status==""){
+// 		status = 98304;
+//     }
+//     jQuery(" li[id^=order_status]").each(function(index, element) {
+//     	jQuery(element).removeClass("this");
+// 	});
+   
+// 	jQuery("#order_status_"+status).addClass("this");
+// 	jQuery("#url").val(status);
+	
+   var begin_count=2;
+   var ret = 1;
+   jQuery(window).scroll(function(){								  
+	 if (jQuery(document).scrollTop() >= jQuery(document).height() - jQuery(window).height()&&ret==1) {
+		 
+		 jQuery.ajax({
+		 		  type:'POST',
+	              url:'$!webPath/buyer/ajaxorder.htm',
+				  data:{"currentPage":begin_count,
+		  				"order_status":"$!{order_status}",
+						"orderBy":jQuery("#orderBy").val(),
+						"orderType":jQuery("#orderType").val()
+			},
+			beforeSend:function(){
+				  jQuery("#loading_none").hide();
+				  jQuery("#loading").show();
+				  ret = 0;
+			},
+			success:function(data){
+				
+				var result=eval("("+data+")");  
+				var currentPage = result.currentPage;
+				var totalPage = result.totalPage;
+				
+				jQuery("#loading").hide();
+				
+				if(begin_count <= totalPage){
+					begin_count = begin_count +1;
+					//最后一页
+					if(currentPage >= totalPage){
+						ret = 0;
+						jQuery("#loading_none").show();
+					}
+					if(currentPage < totalPage){
+						ret = 1;
+					}
+					else {
+						ret = 0;
+						jQuery("#loading_none").show();
+					}
+					jQuery("#orderBy").val(result.orderBy);
+	     			jQuery("#orderType").val(result.orderType);
+	     			jQuery("#currentPage").val(result.currentPage);
+	     			jQuery("#totalPage").val(result.totalPage);
+	     			jQuery(".order_page").find(".order_page_box").last().after(result.ajaxLoadHtml);
+				  	jQuery(".order_page img").lazyload({effect:"fadeIn",width:50,height:50});
+	            	
+				} else {
+					ret = 0;
+					jQuery("#loading_none").show();
+				}
+            	  
+            }
+	    });
+	 }
+	});	
+	
+	
+});
+function order_pay(id){
+	window.location.href="$!webPath/order_pay_view.htm?id="+id;
+}
+function order_cofirm(id){
+	if(confirm("确定要确认收货？")){
+		window.location.href="$!webPath/buyer/order_cofirm.htm?id="+id;
+	}
+}
+
+</script>
+</head>
+
+<body class="user_bg">
+
+	<div class="phone_hd">
+		<a class="back" href="javascript:history.go(-1);" >
+			<img src="$!webPath/resources/style/system/front/wap/images/back.png" width="30" height="30">
+		</a>我的收藏
+	</div>
+	<div class="order_page">
+		<div class="favorite_hd">
+			<ul>
+				<li id="order_status_98304"  ><a href="$!webPath/buyer/favorite_goods.htm">商品</a></li>
+				<li id="order_status_163843" class="this" ><a href="$!webPath/buyer/favorite_store.htm">商家</a></li>
+<!-- 				<li id="order_status_983042"><a href="$!webPath/buyer/favorite_article.htm">文章</a></li> -->
+			</ul>
+			<input type="hidden" name="url" id="url">
+		</div>
+		
+		<div>
+			<form action="$!webPath/buyer/favorite_store.htm" method="post" >
+					<table width="100%" border="0" cellspacing="0" cellpadding="0" id="opertable_wap">
+						<tr id="opertable_wap">
+							<td width="25%">店铺名称 <input name="mulitId" type="hidden"
+								id="mulitId" /> <input name="type" type="hidden" id="type"
+								value="1" /></td>
+							<!--                       <td width="25%">店主</td> -->
+							<td width="25%" align="center">地址</td>
+							<td width=25% " align="center">操作</td>
+						</tr>
+						#foreach($obj in $objs)
+						<tr class="opertr">
+							<td class="oppertrsp"><span class="oppersp2"> <!--                         <input name="id" type="checkbox" value="$!obj.id" id="id" /> -->
+									#if($!obj.store.store_logo)
+									#set($store_logo="$!webPath/$!{obj.store.store_logo.path}/$!{obj.store.store_logo.name}")
+									#else
+									#set($store_logo="$!webPath/$!config.storeImage.path/$!config.storeImage.name")
+									#end <img src="$!store_logo" width="50" height="50" /></span><span
+								class="oppersp1"> </span><span class="oppersp3">$!obj.store.store_name</span></td>
+							<!--                       <td class="oppertra"> -->
+							<!--                        <span style="float:left; margin-right:5px;">$!obj.store.store_ower</span> -->
+							<!--                       <span style="float:left;"> -->
+							<!--                       <a style="display:block; padding:2px 5px; border:1px solid #ccc; float:left;" href="$!webPath/buyer/message_send.htm?userName=$!{obj.store.user.userName}" target="_blank">站内信</a> -->
+							<!--                       </span> -->
+							<!--                       </td> -->
+							<td align="center">$!{obj.store.area.parent.parent.areaName}
+								$!{obj.store.area.parent.areaName} $!{obj.store.area.areaName}</td>
+							<td class="operajt" align="center"><span class="del"><a
+									href="$!webPath/buyer/favorite_del.htm?mulitId=$!obj.id&currentPage=$!currentPage&type=1">删除</a></span></td>
+						</tr>
+						#end
+					</table>
+				<div class="alldel">
+					<div class="userfenye">$!gotoPageFormHTML</div>
+					<div class="alldel_l">
+						<span class="alldel_la"> 
+						<!--                    <input name="all1" type="checkbox" id="all1" value="" onclick="selectAll(this);"/> -->
+						<!--                     </span><span class="alldel_lb"><label for="all">全选</label></span> <span  class="alldel_lc"><a href="javascript:void(0);" onclick="cmd('$!webPath/buyer/favorite_del.htm','')">删除</a></span></div> -->
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="loading" id="loading" style="display: none;">
+	    <ul>
+	      <li><img src="$!webPath/resources/style/system/front/wap/images/loading.gif" height="16" width="16"></li>
+	      <li>正在加载....</li>
+	    </ul>
+	</div>
+<!-- 	<div class="loading" id="loading_none" style="display: block;"> -->
+<!-- 	    <ul> -->
+<!-- 	      <li>没有更多了....</li> -->
+<!-- 	    </ul> -->
+<!-- 	</div> -->
+	
+	<input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+	<input name="totalPage" type="hidden" id="totalPage" value="$!totalPage" />
+    <input name="order_status" type="hidden" id="order_status" value="$!{order_status}" />
+    <input name="orderBy" type="hidden" id="orderBy" value="$!orderBy" />
+    <input name="orderType" type="hidden" id="orderType" value="$!orderType" /> 
+		
+	$!httpInclude.include("/footer.htm")
+	 
+</body>
+</html>

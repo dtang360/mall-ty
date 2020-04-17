@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+#macro ( genericTree $somelist ) 
+#foreach ( $some in $somelist )
+<option value="$!some.id">#if($!some.level>0)
+#foreach($count in [0..$!some.level])&nbsp;#end #end $!some.className</option>
+#genericTree($some.childs) 
+#end 
+#end
+<link href="$!webPath/resources/style/system/manage/$!{config.websiteCss}/template.css"  rel="stylesheet" type="text/css"/>
+<link  href="$!webPath/resources/style/common/css/jquery-ui-1.8.22.custom.css" type=text/css rel=stylesheet>
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery-ui-1.8.21.js"></script>
+<script src="$!webPath/resources/js/jquery.poshytip.min.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script src="$!webPath/resources/js/jquery.zh.cn.js"></script>
+<script>
+jQuery(document).ready(function(){
+ jQuery("#theForm").validate({
+	ignore: "",
+    rules:{
+      printer_sn:{
+	    required :true
+	  },
+	  printer_key:{
+	    required :true,
+	  },
+	 },
+	messages:{
+	  printer_sn:{required:"打印机编号SN不能为空"},
+	  printer_key:{required:"打印机识别码SKEY不能为空"}
+	}
+  });
+ //
+ jQuery("select").change(function(){
+     var level=jQuery(this).attr("level");
+	 var id=jQuery(this).val();
+	 if(id!=""){
+	  jQuery.post("$!webPath/load_area.htm",{"pid":id},function(data){
+	     jQuery("#area"+level).empty();
+		  jQuery("#area"+level).append("<option value=''>请选择</option>");
+	    jQuery.each(data, function(index,item){
+		  jQuery("#area"+level).append("<option value='"+item.id+"'>"+item.areaName+"</option>");
+		  jQuery("#area"+level).show();
+		});
+	  },"json");
+	 }else{
+	   for(var i=level;i<=3;i++){
+	    jQuery("#area"+i).empty();
+	    jQuery("#area"+i).hide();
+	   }
+	 }
+  });
+ jQuery("#area3").change(function(){
+   var id=jQuery(this).val();
+   jQuery("#area_id").val(id);
+ });
+});
+
+function saveForm(){
+   jQuery("#theForm").submit();
+}
+
+
+</script>
+</head>
+<body>
+<div class="cont">
+<!--   <div class="settab"><span class="tab-one"></span> <span class="tabs"> <a href="$!webPath/admin/store_list.htm" >管理</a> | <a href="$!webPath/admin/store_add.htm" #if(!$!edit)class="this"#end>新增</a>|<a href="$!webPath/admin/store_gradelog_list.htm">升级申请</a>#if($!edit)<a href="$!webPath/admin/store_add.htm" class="this">编辑</a>#end</span> <span class="tab-two"></span></div> -->
+  <div class="settab"><span class="tab-one"></span> <span class="tabs"> <a href="$!webPath/admin/store_printer_list.htm"  >管理</a>|<a class="this">管理打印机</a> </span> <span class="tab-two"></span></div>
+  <form name="theForm" id="theForm" action="$!webPath/admin/store_printer_save.htm" method="post">
+  	<input name="store_id" type="hidden" id="id" value="$!objs.id" />
+    <input name="id" type="hidden" id="id" value="$!obj.id" />
+    <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+    <input name="list_url" type="hidden" id="list_url" value="$!webPath/admin/store_printer_list.htm" />
+    <input name="add_url" type="hidden" id="add_url" value="$!webPath/admin/store_printer_add.htm" />
+    <div class="setcont">
+      <!--鼠标经过样式-->
+      <ul class="set1">
+        <li>店铺名称</li>
+        <li><span class="webname">
+          <input name="store_name" type="text" title="$!objs.store_name，不可编辑！" readonly="true" id="store_name" value="$!objs.store_name" size="40" />
+          </span></li>
+      </ul>
+      <ul class="set1">
+        <li><strong class="orange fontsize20">*</strong>*打印机编号SN：</li>
+        <li><span class="webname">
+          <input name="printer_sn" type="text" id="printer_sn" value="$!obj.printer_sn" size="40" />
+          </span></li>
+        <li><strong class="orange fontsize20">*</strong>*打印机识别码SKEY：</li>
+        <li><span class="webname">
+          <input name="printer_key" type="text" id="printer_key" value="$!obj.printer_key" size="40" />
+          </span></li>
+        <li>打印机名称：</li>
+        <li><span class="webname">
+          <input name="printer_name" type="text" id="printer_name" value="$!obj.printer_name" size="40" />
+          </span></li>
+        <li>手机卡号码：</li>
+        <li><span class="webname">
+          <input name="printer_sim_num" type="text" id="printer_sim_num" value="$!obj.printer_sim_num" size="40" />
+          </span></li>
+      </ul>
+    </div>
+  </form>
+  <div class="submit">
+<!--     <input name="save" type="button" value="打印测试" onclick="saveForm()" /> -->
+    <input name="save" type="button" value="提交" onclick="saveForm()" />
+  </div>
+</div>
+</body>
+</html>

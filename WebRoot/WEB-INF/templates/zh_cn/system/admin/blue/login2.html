@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>商城系统后台登录- $!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+</head>
+<link href="$!webPath/resources/style/system/manage/blue/login.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/system/front/default/css/goods.css" type="text/css" rel="stylesheet" />
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script>
+
+jQuery(document).ready(function(){
+	  jQuery("#theForm").validate({
+		     errorPlacement:function(error,element) {
+		         error.appendTo(jQuery("#login_error_sp"));  
+// 		         jQuery("#login_error_sp").show('normal');
+		       },
+		   	success:function(label){
+// 		   		jQuery("#login_error_sp").hide();
+		   	},
+		rules: {
+				username: "required",
+				password: "required",
+				code:{
+					required:true,
+					remote:{
+						    url: "$!webPath/verify_code.htm",     //后台处理程序
+				            type: "post",               //数据发送方式
+				            dataType: "json",           //接受数据格式   
+				            data: {                     //要传递的数据
+				                  "code": function(){return jQuery("#code").val();}
+						     }
+						  }
+				}
+				},
+			messages: {
+				username: "用户名不能为空<br>",
+				password: "密码不能为空<br>",
+				code:{
+					  required:"验证码不能为空<br>",
+					  remote:"验证码不正确<br>"
+					}
+			}
+	  });
+	});
+
+function refreshCode(){
+	jQuery("#code_img").attr("src","$!webPath/verify.htm?d"+new Date().getTime());
+}
+function login(){
+	jQuery("#theForm").submit();
+}
+var EnterSubmit = function(evt){
+evt = window.event || evt;
+ if (evt.keyCode == 13)
+ { 
+  login();
+ }
+}
+window.document.onkeydown=EnterSubmit;
+jQuery(document).ready(function(){
+     if(top.location!=this.location)top.location=this.location;//跳出框架在主窗口登录
+	jQuery('#username').focus();	
+});
+</script>
+<body>
+<form name="theForm" id="theForm" action="$!webPath/wemalls_login.htm" method="post">
+<div class="main_body">
+  <div class="login_top"> 
+   <div class="login_error_sp" id="login_error_sp" style="margin:0 auto;text-align:center;padding-top:10px;"></div>
+  </div>
+  <div class="login_mid">
+    <div class="login_left"></div>
+    <div class="login_m">
+      <ul>
+        <li>
+          <div class="usename"></div>
+		  #if($!user)
+		  <div class="utxt">
+			<input name="username" type="hidden" id="username" value="$!user.userName" />$!user.userName
+		 </div>
+		  #else
+          <div class="ntxt">
+            <input name="username" type="text" id="username"  autocomplete="false"/>
+          </div>
+		  #end
+        </li>
+        <li>
+          <div class="password"></div>
+          <div class="ptxt">
+            <input name="password" type="password" id="password"  autocomplete="false"/>
+          </div>
+        </li>
+        <li>
+          <div class="yzm"></div>
+          <div class="ytxt">
+            <input name="code" type="text" id="code"  style="text-transform:uppercase;" autocomplete="false"/>
+          </div>
+          <div class="yzmimg" style="float:left;"><img style="cursor:pointer;" src="$!webPath/verify.htm" id="code_img" onclick="refreshCode();" width="45" height="27" /></div>
+          <div style="float:left;width:30px;margin-left:5px;" ><a style="color: #ffffff;" onclick="refreshCode();" href="javascript:void(0);" >点击刷新</a></div>
+        </li>
+      </ul>
+    </div>
+    <div class="login_r"></div>
+  </div>
+  <div class="login_mid2">
+    <div class="login_left2"></div>
+    <div class="login_m2">
+	  <div style="width:140px;float:left;"><a href="$!webPath/index.htm" target="_blank" style="padding-top:0px; display:block; float:right; margin-right:30px;color:#fff">返回首页</a></div>
+      <div class="m1">
+        <input name="" type="button"  value="" onclick="login();" style="cursor:pointer" />
+        <input name="login_role" type="hidden" id="login_role" value="admin" />
+      </div>
+      <div class="m2">
+        <input name="" type="reset"  value=""  style="cursor:pointer"/>
+      </div>
+    </div>
+    <div class="login_r2"></div>
+  </div>
+  <div class="bottom">
+    <div class="bottoml"></div>
+    <div class="bottomm">
+    </div>
+    <div class="bottomr"></div>
+  </div>
+</div>
+</form>
+</body>
+</html>

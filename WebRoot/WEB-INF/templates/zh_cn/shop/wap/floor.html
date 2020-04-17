@@ -1,0 +1,33 @@
+<div class="phone_floor">
+#foreach($floor in $floors) 
+	<h5	style="text-align: center; font-size: 14px; line-height:30px; color: #ff8b00; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-image: -webkit-linear-gradient(left, #ff4a7d, #ff8b00);">
+		 ${floor.gf_name}</h5>
+			#foreach($!info in ${floor.childs}) #if($!velocityCount==1)
+			<div class="recom">
+				<div class="ohbox">
+					<ul class="piclist">
+						#foreach($!goods in $!gf_tools.generic_goods($!info.gf_gc_goods))
+						<li>#if($!goods.goods_main_photo)
+							#set($img="${map.imageWebServer}/${goods.goods_main_photo.path}/${goods.goods_main_photo.name}_middle.${goods.goods_main_photo.ext}")
+							#else
+							#set($img="${map.imageWebServer}/${map.goodsImagePath}/${map.goodsImageName}")
+							#end 
+							<a href="${map.webPath}/goods_${goods.id}.htm"> <img
+								src="$!img" original="$!img" onerror="$!errorimg"> <span
+								class="re_name">$!CommUtil.substring("$!goods.goods_name",18)</span>
+								<!-- 								<p class="price" style="font-size:13px;color:#C0C0C0;">$!{store_reommend_good.goods_store.store_name}</p> -->
+								<p class="price" style="font-size: 13px; color: #C0C0C0;">
+									<font style="font-size: 13px; color: #FFA500;">现价:¥<b>$!{goods.goods_current_price}</font>
+								</p>
+								<p class="price" style="font-size: 13px; color: #C0C0C0;">
+									门市价:¥<b>${goods.goods_price}</b>
+								</p>
+						</a>
+						</li> #end
+					</ul>
+				</div>
+			</div>
+			#end 
+		#end 
+	#end
+</div>

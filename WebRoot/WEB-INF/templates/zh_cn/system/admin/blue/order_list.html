@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/manage/$!{config.websiteCss}/template.css"  rel="stylesheet" type="text/css"/>
+<link  href="$!webPath/resources/style/common/css/jquery-ui-1.8.22.custom.css" type=text/css rel=stylesheet>
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<script src="$!webPath/resources/js/jquery.shop.common.js"></script>
+<script src="$!webPath/resources/js/jquery.poshytip.min.js"></script>
+<script src="$!webPath/resources/js/jquery-ui-1.8.21.js"></script>
+<script src="$!webPath/resources/js/jquery.zh.cn.js"></script>
+<script>
+jQuery(document).ready(function(){
+  jQuery('#beginTime').datepicker({
+	  dateFormat:"yy-mm-dd",
+	  changeMonth: true,
+	  changeYear: true,
+	  onSelect: function(selectedDate) {//选择日期后执行的操作
+		  if($("#endTime").val()!=''&&$("#beginTime").val()>$("#endTime").val()){
+	           alert("下单时间填写有误！下单起始时间应小于下单终止时间");
+	           return  $(this).val("");
+	      }
+	  }
+  });
+  jQuery('#endTime').datepicker({
+	  dateFormat:"yy-mm-dd",
+	  changeMonth: true,
+	  changeYear: true,
+	  onSelect: function(selectedDate) {//选择日期后执行的操作
+		  if($("#endTime").val()!=''&&$("#beginTime").val()>$("#endTime").val()){
+	           alert("下单时间填写有误！下单起始时间应小于下单终止时间");
+	           return  $(this).val("");
+	      }
+	  }
+  });
+  //
+  
+//   jQuery('#beginTime').change(function()({
+//       if($("#beginTime").val()>$("#endTime").val()){
+//           alert("下单时间填写有误！下单起始时间应小于下单终止时间");
+//           return  $(this).val("");
+//        }
+//   });
+//   jQuery('#endTime').change(function()({
+//       if(parseFloat($("#beginTime").val())>parseFloat($("#endTime").val())){
+//           alert("下单时间填写有误！下单起始时间应小于下单终止时间");
+//           return  $(this).val("");
+//        }
+//   });
+  
+    $("#end_price").change(function(){
+      if(parseFloat($("#begin_price").val())>=parseFloat($("#end_price").val())){
+         alert("订单金额填写有误！");
+         return  $(this).val("");
+      }
+   });
+    $("#begin_price").change(function(){
+        if(parseFloat($("#begin_price").val())>=parseFloat($("#end_price").val())){
+           alert("订单金额填写有误！");
+           return  $(this).val("");
+        }
+     });
+  
+  
+});
+</script>
+</head>
+<body>
+
+<div class="cont">
+  <div class="settab"><span class="tab-one"></span> <span class="tabs"> <a href="javascript:void(0);" class="this">所有订单</a></span> <span class="tab-two"></span></div>
+  <form action="$!webPath/admin/order_list.htm" method="post" id="queryForm" >
+  <div class="orders">
+    <ul>
+      <li> <span>订单状态</span><span class="ordersel">
+        <select name="order_status" id="order_status">
+          <option value=""  #if($!order_status=="") selected="selected" #end >所有订单</option>
+          <option value="10" #if($!order_status=="10") selected="selected" #end >待付款</option>
+          <option value="20" #if($!order_status=="20") selected="selected" #end >待发货</option>
+          <option value="16" #if($!order_status=="16") selected="selected" #end >货到付款待发货</option>
+          <option value="30" #if($!order_status=="30") selected="selected" #end >已发货</option>
+          <option value="40" #if($!order_status=="40") selected="selected" #end >已收货</option>
+          <option value="50" #if($!order_status=="50") selected="selected" #end >已完成</option>
+          <option value="0" #if($!order_status=="0") selected="selected" #end >已取消</option>
+        </select>
+      </span><span>类型</span><span>
+        <select name="type" id="type">
+          <option value="store" #if($!type=="store") selected="selected" #end >店铺名称</option>
+          <option value="buyer" #if($!type=="buyer") selected="selected" #end >买家名称</option>
+          <option value="order" #if($!type=="order") selected="selected" #end >订单号</option>
+        </select>
+        </span> <span class="order_input size1">
+        <input name="type_data" value="$!type_data" type="text" id="type_data" />
+      </span> <span>支付方式</span><span>
+        <select name="payment" id="payment">
+          <option value="" #if($!payment=="") selected="selected" #end >所有支付方式</option>
+          <option value="payafter" #if($!payment=="payafter") selected="selected" #end >货到付款</option>
+          <option value="alipay" #if($!payment=="alipay") selected="selected" #end >支付宝</option>
+          <option value="wxcodepay" #if($!payment=="wxcodepay") selected="selected" #end >微信扫码支付</option>
+      	  <option value="weixin_wap" #if($!payment=="weixin_wap") selected="selected" #end >微信公众号支付</option>
+          <option value="chinabank" #if($!payment=="chinabank") selected="selected" #end >网银在线</option>
+          <option value="bill" #if($!payment=="bill") selected="selected" #end >快钱</option>
+          <option value="tenpay" #if($!payment=="tenpay") selected="selected" #end >财付通</option>
+          <option value="outline" #if($!payment=="outline") selected="selected" #end >线下支付</option>
+          <option value="balance" #if($!payment=="balance") selected="selected" #end >预付款支付</option>
+        </select>
+        </span></li>
+      <li> <span>下单时间</span><span class="order_input size2">
+        <input name="beginTime"  value="$!beginTime" type="text" id="beginTime"  readonly="readonly"/>
+        </span><span>—</span><span class="order_input size2">
+        <input name="endTime" value="$!endTime"  type="text" id="endTime" readonly="readonly" />
+        </span> <span>订单金额</span><span class="order_input size2">
+        <input name="begin_price" value="$!begin_price" type="text" id="begin_price" />
+        </span><span>—</span><span class="order_input size2">
+        <input name="end_price" type="text" value="$!end_price" id="end_price" />
+        </span> <span class="btn_search">
+        <input name="" type="submit"  value="查询" style="cursor:pointer;"/>
+      </span> </li>
+    </ul>
+  </div>
+  </form>
+  <form action="$!webPath/admin/order_list.htm" method="post" id="ListForm" >
+    <div class="allshop_table">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr style="background: #if($!config.websiteCss=='blue') #2A7AD2 #end 
+      #if($!config.websiteCss=='black')#333 #end; height:30px; color:#FFF">
+        <td width="10%">店铺名称</td>
+        <td width="10%">发货店铺</td>
+        <td width="10%">订单号</td>
+        <td width="15%">买家名称</td>
+        <td  width="15%">下单时间</td>
+        <td  width="10%">订单总额</td>
+        <td width="10%">支付方式</td>
+        <td width="10%">订单状态</td>
+        <td width="10%" align="center">操作</td>
+      </tr>
+      #foreach($obj in $objs)
+      <tr>
+        <td>$!obj.store.store_name</td>
+        <td>$!obj.pickStore.store_name</td>
+        <td>$!obj.order_id</td>
+        <td>$!obj.user.userName</td>
+        <td>$!CommUtil.formatLongDate($!obj.addTime)</td>
+        <td>$!obj.totalPrice</td>
+            #set($paymentSN="未支付")
+            #if($!obj.payment.mark=="alipay")
+            #set($paymentSN="支付宝")
+            #end
+            #if($!obj.payment.mark=="alipay_wap")
+            #set($paymentSN="手机网页支付宝")
+            #end
+            #if($!obj.payment.mark=="bill")
+            #set($paymentSN="快钱")
+            #end                 
+            #if($!obj.payment.mark=="chinabank")
+            #set($paymentSN="网银在线")
+            #end       
+            #if($!obj.payment.mark=="outline")
+            #set($paymentSN="线下支付")
+            #end                  
+            #if($!obj.payment.mark=="balance")
+            #set($paymentSN="预存款支付")
+            #end 
+            #if($!obj.payment.mark=="payafter")
+            #set($paymentSN="货到付款")
+            #end
+            #if($!obj.payment.mark=="paypal")
+            #set($paymentSN="paypal")
+            #end
+          #if($!obj.payment.mark=="wxcodepay")
+          #set($paymentSN="微信扫码支付")
+          #end
+          #if($!obj.payment.mark=="weixin_wap")
+          #set($paymentSN="微信公众号支付")
+          #end
+        <td>$!paymentSN</td>
+            #if($!obj.order_status==0)
+            #set($status="已取消")
+            #end
+            #if($!obj.order_status==10)
+            #set($status="待付款")
+            #end
+            #if($!obj.order_status==15)
+            #set($status="线下支付待审核")
+            #end
+            #if($!obj.order_status==16)
+            #set($status="货到付款待发货")
+            #end
+            #if($!obj.order_status==20)
+            #set($status="已付款")
+            #end
+            #if($!obj.order_status==30)
+            #set($status="已发货")        
+            #end                
+            #if($!obj.order_status==40)
+            #set($status="已收货")
+            #end
+            #if($!obj.order_status==50)
+            #set($status="已完成,已评价")                                              
+            #end
+            #if($!obj.order_status==60)
+            #set($status="已结束")                                              
+            #end   
+        <td>$!status</td>
+        <td align="center" class="blue xiahua"><a href="$!webPath/admin/order_view.htm?id=$!obj.id">查看</a></td>
+      </tr>
+     #end
+    </table>
+  </div>
+  <div class="fenye">
+    <input name="end_price" type="hidden" id="end_price" value="$!end_price" />
+    <input name="begin_price" type="hidden" id="begin_price" value="$!begin_price" />
+    <input name="endTime" type="hidden" id="endTime" value="$!endTime" />
+    <input name="beginTime" type="hidden" id="beginTime" value="$!beginTime" />
+    <input name="payment" type="hidden" id="payment" value="$!payment" />
+    <input name="type_data" type="hidden" id="type_data" value="$!type_data" />
+    <input name="type" type="hidden" id="type" value="$!type" />
+    <input name="order_status" type="hidden" id="order_status" value="$!order_status" />
+    <input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+    $!gotoPageFormHTML</div>
+  </form>
+</div>
+</body>
+</html>

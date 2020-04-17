@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<title>
+#if($!obj.className)
+$!{obj.className}- $!{config.title} - Powered by wemalls business edition
+#else
+新闻列表-$!{config.title} - Powered by wemalls business edition
+#end
+</title>
+<link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/system/front/default/css/goods.css" type="text/css" rel="stylesheet" />
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<div class="main">
+    <div class="index">
+    <div class="index2">
+      <div class="articlesright">
+      		<div class="phone_floor">
+			<h1>
+				<span class="fl">热门推荐</span>
+			</h1>
+			<div class="recom">
+				<div class="ohbox">
+					#foreach($!store_reommend_good in $objs)
+					<ul class="piclist">
+		              #if($!store_reommend_good.goods_main_photo)
+		              	#set($img="$!imageWebServer/$!{store_reommend_good.goods_main_photo.path}/$!{store_reommend_good.goods_main_photo.name}_middle.$!{store_reommend_good.goods_main_photo.ext}")
+		              #else
+		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+		              #end
+		              
+		              #set($goods_url="$!webPath/goods_$!{store_reommend_good.id}.htm")
+		              #if($!config.second_domain_open)
+		              	#set($goods_url="http://$!{store_reommend_good.goods_store.store_second_domain}.$!{domainPath}/goods_$!{store_reommend_good.id}.htm")
+		              #end
+		              <a  style="float:none" href="$!goods_url">
+						<li style="text-align:center" >
+<!-- 							<a  style="float:none" href="$!goods_url"> -->
+								<img src="$!img" >
+<!-- 							</a> -->
+						</li>
+						<li>
+								<p class="price" style="font-size:15px;padding:2px;">$!CommUtil.substring("$!store_reommend_good.title",10)</p>
+								<p class="price" style="font-size:13px;color:#C0C0C0;padding:3px;">$!{store_reommend_good.goods_store.store_name}</p>
+								<p class="price" style="font-size:13px;color:#C0C0C0;padding:3px;">门市价:¥<b>$!{store_reommend_good.goods_price}</b></p>
+								<p class="price" style="font-size:14px;color:#FFA500;padding:3px;" >现价:¥<b>$!{store_reommend_good.goods_current_price}</b></p>
+								<p class="price" style="font-size:13px;color:#C0C0C0;padding:3px;" >地址:$!{store_reommend_good.goods_store.store_address}</p>
+						</li>
+						</a>
+					</ul>
+					  #end
+				</div>
+			</div>
+		</div>
+        <div class="artilist">
+          <ul class="aritlistul">
+            #foreach($obj in $objs)
+			<li><span>$!CommUtil.formatShortDate($!obj.addTime)</span><a href="$!webPath/article_$!{obj.id}.htm">$!obj.title</a></li>
+            #end
+          </ul>
+        </div>
+        <div class="fenye">
+          $!gotoPageStaticHTML
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

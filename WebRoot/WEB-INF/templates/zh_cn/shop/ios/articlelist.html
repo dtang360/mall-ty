@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta name="apple-wap-web-app-capable" content="yes">
+<meta name="apple-wap-web-app-status-bar-style" content="black-translucent">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+	<script
+		src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+</head>
+
+<body class="index_bg">
+	<div class="phone_hd">
+		<a class="back" href="javascript:history.go(-1);"><img
+			src="$!webPath/resources/style/system/front/wap/images/back.png"
+			width="25" height="25"></a>列表<a class="menu home"
+			href="$!webPath/ios/index.htm"><img
+			src="$!webPath/resources/style/system/front/wap/images/home.png"
+			width="25" height="25"></a>
+	</div>
+	<div class="main">
+		<div class="mt50"></div>
+		<div class="phone_floor">
+			<div class="recom">
+				<div class="ohbox">
+					#foreach($!obj in $objs)
+					<ul class="piclist">
+		              #if($!obj.firstImgUrl)
+		              	#set($img="$!{obj.firstImgUrl}")
+		              #else
+		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+		              #end
+		              
+		              	#set($goods_url="$!webPath/article_$!{obj.id}.htm")
+		              <a  style="float:none" href="$!goods_url">
+						<li class="leftli" >
+								<p class="price" style="height:50px;font-size:14px;padding:2px;">$!CommUtil.substring("$!obj.title",26)</p>
+								<p class="price" style="height:70px;font-size:13px;color:#C0C0C0;padding:3px;">$!CommUtil.substring("$!obj.mark",45)</p>
+								<p class="price" style="height:20px;font-size:10px;color:#C0C0C0;padding:3px;" >$!{obj.addTime}</p>
+<!-- 								<p class="price" style="height:20px;font-size:10px;color:#C0C0C0;padding:3px;" >$!{obj.firstImgUrl}</p> -->
+						</li>
+						<li class="rightli" style="text-align:center" >
+<!-- 							<a  style="float:none" href="$!goods_url"> -->
+								<img src="$!img" >
+<!-- 							</a> -->
+						</li>
+						</a>
+					</ul>
+					  #end
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</body>
+ $!httpInclude.include("/footer.htm")
+</html>

@@ -1,0 +1,45 @@
+<script src="http://api.map.baidu.com/api?v=1.4" type="text/javascript"></script>
+	<div style="margin-top: 20px; margin-bottom: 30px; height: 335px;">
+		<div class="left">
+			<div class="shop_map">
+				<div class="shop_add_map" id="bmap"
+					style="width: 580px; height: 335px; border: #ccc solid 1px;">
+				</div>
+			</div>
+		</div>
+		<div class="sjwz">
+			<h2 class="font_03">$!{store.store_name}</h2>
+			<p>所在区域：$!areaViewTools.generic_area_info("$!store.area.id")</p>
+			<p>详细地址：$!{store.store_address}</p>
+			<p>预约电话：$!{store.store_telephone}</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+ <script type="text/javascript">
+    #set($store_logo="$!webPath/$!config.storeImage.path/$!config.storeImage.name")
+    #if($!store.store_logo)
+       #set($store_logo="$!webPath/$!store.store_logo.path/$!store.store_logo.name")
+    #end
+   var map = new BMap.Map("bmap");
+   #if($!{store.store_lng}&&$!{store.store_lat})
+   map.centerAndZoom(new BMap.Point($!{store.store_lng},$!{store.store_lat}), 16);
+   var sContent ="<h4 style='margin:0 0 5px 0;padding:0.2em 0'>$!{store.store_name}</h4>" + 
+"<img style='float:right;margin:4px' id='imgDemo' src='$!store_logo' width='100' height='100' title='$!{store.store_name}'/></div>";
+    var point = new BMap.Point($!{store.store_lng},$!{store.store_lat});
+    var marker = new BMap.Marker(point);
+    var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+    map.centerAndZoom(point, 15);
+    map.addOverlay(marker);
+	marker.enableDragging();
+	marker.setAnimation(BMAP_ANIMATION_BOUNCE); 
+	marker.openInfoWindow(infoWindow);
+	marker.addEventListener("click", function(){          
+      this.openInfoWindow(infoWindow);
+    });
+	//
+   #else
+   map.centerAndZoom(new BMap.Point(123.425329,41.792454), 11);
+   #end
+   map.enableScrollWheelZoom(); 
+   map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+ </script>

@@ -1,0 +1,5 @@
+<a href="javascript:void(0);" onclick="before_set(-3,'$!CommUtil.formatShortDate($!dates.get(0))');">前三天</a>|
+	#foreach($dat in $dates)
+	<a href="$!webPath/admin/delivery_goods_list.htm?delivery_time=$!CommUtil.formatShortDate($!dat)">$!CommUtil.formatShortDate($!dat)</a>|
+	#end
+<a href="javascript:void(0);" onclick="before_set(3,'$!CommUtil.formatShortDate($!dates.get(0))');">后三天</a> 

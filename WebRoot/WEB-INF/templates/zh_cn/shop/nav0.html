@@ -1,0 +1,124 @@
+    <script>
+jQuery(document).ready(function(){
+  
+  jQuery(".navul a").each(function(){
+    var original_url=jQuery(this).attr("original_url");
+	if("$!{current_url}".indexOf(original_url)>=0){
+	   jQuery(this).addClass("this");	
+	}
+  });
+// 	    var child_count = jQuery(this).attr("child_count");
+// 		var sc_id=jQuery(this).attr("id");
+// 		var sc_color=jQuery(this).attr("sc_color");		
+// 	    var eq =jQuery(this).index();
+// 		if(jQuery(".left_menu_dd[id=child_"+sc_id+"]").html()==null){
+// 	   	  jQuery.ajax({type:'POST',url:'',data:{"sc_id":sc_id},success:function(data){
+// 		    if(jQuery(".left_menu_dd[id=child_"+sc_id+"]").html()==null){																						
+//       	      jQuery(".left_menu_dt[id=dts_"+sc_id+"]").after(data);
+// 		    }
+// 	        if(child_count>0){
+// 		     jQuery("#dts_"+sc_id).addClass("left_menu_this").removeClass("left_menu_dt");
+// 		     jQuery("#child_"+sc_id).show();			
+// 		    }
+// 	    	jQuery("#left_menu_con_"+sc_id).attr("style","border:1px solid "+sc_color+"; border-left:1px solid "+sc_color+";").find(".menu_con_right_top").css("background-color",sc_color);
+// 	        var z = -35;
+//         	var x = eq*z;
+// 	        jQuery("#left_menu_con_"+sc_id).css('margin-top',x+'px');
+// 		    jQuery(".left_menu_dd[id=child_"+sc_id+"]").show();
+// 	      }});
+// 		}else{
+// 		   if(child_count>0){
+// 		      jQuery("#dts_"+sc_id).addClass("left_menu_this").removeClass("left_menu_dt");
+// 		      jQuery("#child_"+sc_id).show();			
+// 		    }
+// 		    jQuery("#left_menu_con_"+sc_id).attr("style","border:1px solid "+sc_color+"; border-left:1px solid "+sc_color+";").find(".menu_con_right_top").css("background-color",sc_color);
+// 	        var z = -35;
+//     	    var x = eq*z;
+// 	        jQuery("#left_menu_con_"+sc_id).css('margin-top',x+'px');
+// 		    jQuery(".left_menu_dd[id=child_"+sc_id+"]").show();
+// 		}
+		
+//   }).mouseleave(function(e){
+// 	  jQuery("dt[id^=dts_]").removeAttr("style");
+// 	  jQuery("div[id^=left_menu_con_]").removeAttr("style"); 
+// 	  var child_count = jQuery(this).attr("child_count");
+// 　　 　jQuery("dt[id^=dts_]").removeClass("left_menu_this").addClass("left_menu_dt");	  
+// 	  jQuery(".left_menu_dd[id^=child_]").hide();
+//   });
+//   jQuery("#nav").mouseover(function(){
+// 	  jQuery(".tit").show();
+	  
+//    });
+
+
+
+});
+
+
+
+</script>
+      <div id="nav" path="$!webPath" style="float:left;box-shadow: 0px 3px 0px #d0d0d0;height: 473px;" >
+        <div class="mod_cate_hd">全部商品分类</div>
+        <ul class="tit">
+               #foreach($gc in $!gcs)
+            #set($icon_img="$!webPath/resources/style/common/images/icon/default_icon.png")
+        		    #if($!gc.icon_type==0)
+		                #if($!gc.icon_sys!="")
+		                #set($icon_img="$!webPath/resources/style/common/images/icon/icon_$!{gc.icon_sys}.png")
+		                #end
+	                #else
+		                #if($!gc.icon_acc)
+		                #set($icon_img="$!webPath/$!gc.icon_acc.path/$!gc.icon_acc.name")
+		                #end
+	                #end 
+          <li class="mod_cate">
+            <h2><i class="arrow_dot fr"></i><a href="$!webPath/store_goods_list_$!{gc.id}.htm">$!gc.className</a></h2>
+            <p class="mod_cate_r">
+             #foreach($gc1 in $gc.childs)
+	                #if($!gc1.display)
+            <a href="$!webPath/store_goods_list_$!{gc1.id}.htm">$!gc1.className</a>
+            		#end
+			#end
+            </p>
+            <div class="mod_subcate">
+              <div class="mod_subcate_main">
+                <dl>
+                  <dt>热门推荐</dt>
+							<dd>
+								#foreach($gcn in $gc.childs) 
+									#if($!gcn.display) 
+										<a href="$!webPath/store_goods_list_$!{gcn.id}.htm">$!gcn.className</a>
+									#end 
+								#end
+							</dd>
+						</dl>
+						#foreach($gc1 in $gc.childs) 
+							#if($!gc1.display)
+							<div class="mod_subcate_channel">
+								#foreach($gc2 in $gc1.childs) 
+									#if($!gc2.display) 
+								<a class="mod_btn_arrow" href="$!webPath/store_goods_list_$!{gc2.id}.htm"><b>$!gc2.className</b><i class="arrow_dot"></i></a>
+								    #end 
+								#end 
+						</div>
+							#end 
+						#end 
+					</div>
+            </div>
+          </li>
+          #end
+        </ul>
+      </div>
+      <div class="menu" style="float:left;width: 1008px;"  >
+        <ul >
+			#set($navs=$!navTools.queryNav(0,-1)) 
+			#foreach($nav in $navs)
+				#if($!CommUtil.indexOf("$!nav.url","http://")>=0)
+				#set($url="$!nav.url") 
+					#else 
+					#set($url="$!webPath/$!{nav.url}") 
+				#end
+				<li style=""><a style="font-size: 17px; href="$url">$!{nav.title}</a></li>
+			#end
+        </ul>
+      </div>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta name="apple-wap-web-app-capable" content="yes">
+<meta name="apple-wap-web-app-status-bar-style" content="black-translucent">
+<title>$!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/wap/css/style.css" rel="stylesheet" type="text/css">
+<script src="$!webPath/resources/style/system/front/wap/js/jquery-1.10.2.min.js"></script>
+<script>
+jQuery(document).ready(function(e) {
+    
+	var status = '$!{ac.id}';
+    
+    if(status==""){
+		status = 98304;
+    }
+    jQuery(" li[id^=order_status]").each(function(index, element) {
+    	jQuery(element).removeClass("this");
+	});
+   
+	jQuery("#order_status_"+status).addClass("this");
+	jQuery("#url").val(status);
+	
+   var begin_count=2;
+   var ret = 1;
+   jQuery(window).scroll(function(){								  
+	 if (jQuery(document).scrollTop() >= jQuery(document).height() - jQuery(window).height()&&ret==1) {
+		 
+		 jQuery.ajax({
+		 		  type:'POST',
+	              url:'$!webPath/buyer/ajaxorder.htm',
+				  data:{"currentPage":begin_count,
+		  				"order_status":"$!{order_status}",
+						"orderBy":jQuery("#orderBy").val(),
+						"orderType":jQuery("#orderType").val()
+			},
+			beforeSend:function(){
+				  jQuery("#loading_none").hide();
+				  jQuery("#loading").show();
+				  ret = 0;
+			},
+			success:function(data){
+				
+				var result=eval("("+data+")");  
+				var currentPage = result.currentPage;
+				var totalPage = result.totalPage;
+				
+				jQuery("#loading").hide();
+				
+				if(begin_count <= totalPage){
+					begin_count = begin_count +1;
+					//最后一页
+					if(currentPage >= totalPage){
+						ret = 0;
+						jQuery("#loading_none").show();
+					}
+					if(currentPage < totalPage){
+						ret = 1;
+					}
+					else {
+						ret = 0;
+						jQuery("#loading_none").show();
+					}
+					jQuery("#orderBy").val(result.orderBy);
+	     			jQuery("#orderType").val(result.orderType);
+	     			jQuery("#currentPage").val(result.currentPage);
+	     			jQuery("#totalPage").val(result.totalPage);
+	     			jQuery(".order_page").find(".order_page_box").last().after(result.ajaxLoadHtml);
+				  	jQuery(".order_page img").lazyload({effect:"fadeIn",width:50,height:50});
+	            	
+				} else {
+					ret = 0;
+					jQuery("#loading_none").show();
+				}
+            	  
+            }
+	    });
+	 }
+	});	
+	
+	
+});
+function order_pay(id){
+	window.location.href="$!webPath/order_pay_view.htm?id="+id;
+}
+function order_cofirm(id){
+	if(confirm("确定要确认收货？")){
+		window.location.href="$!webPath/buyer/order_cofirm.htm?id="+id;
+	}
+}
+
+</script>
+</head>
+
+<body class="user_bg">
+
+<!-- 	<div class="phone_hd"> -->
+<!-- 		<a class="back" href="$!webPath/buyer/index.htm"> -->
+<!-- 			<img src="$!webPath/resources/style/system/front/wap/images/back.png" width="30" height="30"> -->
+<!-- 		</a>看一看 -->
+<!-- 	</div> -->
+<!-- 		<div class="phone_hd"> -->
+<!-- 		<a class="back" href="javascript:history.go(-1);"><img -->
+<!-- 			src="$!webPath/resources/style/system/front/wap/images/back.png" -->
+<!-- 			width="25" height="25"></a>列表<a class="menu home" -->
+<!-- 			href="$!webPath/ios/index.htm"><img -->
+<!-- 			src="$!webPath/resources/style/system/front/wap/images/home.png" -->
+<!-- 			width="25" height="25"></a> -->
+<!-- 	</div> -->
+
+	<div class="order_page" style="padding-top:0px;">
+		<div class="order_hd1">
+			<ul>
+				<li id="order_status_98304" class="this"><a href="$!webPath/bloglist_98304.htm">巴楚</a></li>
+				<li id="order_status_163843"><a href="$!webPath/bloglist_163843.htm">旅游景区</a></li>
+			    <li id="order_status_163844"><a href="$!webPath/bloglist_163844.htm">美食</a></li>
+			    <li id="order_status_163845"><a href="$!webPath/bloglist_163845.htm">娱乐</a></li>
+			</ul>
+			<input type="hidden" name="url" id="url">
+		</div>
+		<div class="main">
+		<div class="phone_floor">
+			<div class="recom">
+				<div class="ohbox">
+					#foreach($!obj in $objs)
+					<ul class="piclist">
+		              #if($!obj.firstImgUrl)
+		              	#set($img="$!{obj.firstImgUrl}")
+		              #else
+		              	#set($img="$!imageWebServer/$!{config.goodsImage.path}/$!{config.goodsImage.name}")
+		              #end
+		              	#set($goods_url="$!webPath/article_$!{obj.id}.htm")
+		              <a  style="float:none" href="$!goods_url">
+						<li class="leftli" >
+								<p class="price" style="height:50px;font-size:14px;padding:2px;">$!CommUtil.substring("$!obj.title",26)</p>
+								<p class="price" style="height:70px;font-size:13px;color:#C0C0C0;padding:3px;">$!CommUtil.substring("$!obj.content",45)</p>
+								<p class="price" style="height:20px;font-size:10px;color:#C0C0C0;padding:3px;" >$!{obj.addTime}</p>
+<!-- 								<p class="price" style="height:20px;font-size:10px;color:#C0C0C0;padding:3px;" >$!{obj.firstImgUrl}</p> -->
+						</li>
+						<li class="rightli" style="text-align:center" >
+<!-- 							<a  style="float:none" href="$!goods_url"> -->
+								<img src="$!img" >
+<!-- 							</a> -->
+						</li>
+						</a>
+					</ul>
+					  #end
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<div class="loading" id="loading" style="display: none;">
+	    <ul>
+	      <li><img src="$!webPath/resources/style/system/front/wap/images/loading.gif" height="16" width="16"></li>
+	      <li>正在加载....</li>
+	    </ul>
+	</div>
+	<div class="loading" id="loading_none" style="display: block;">
+	    <ul>
+	      <li>没有更多了....</li>
+	    </ul>
+	</div>
+	
+	<input name="currentPage" type="hidden" id="currentPage" value="$!currentPage" />
+	<input name="totalPage" type="hidden" id="totalPage" value="$!totalPage" />
+    <input name="order_status" type="hidden" id="order_status" value="$!{order_status}" />
+    <input name="orderBy" type="hidden" id="orderBy" value="$!orderBy" />
+    <input name="orderType" type="hidden" id="orderType" value="$!orderType" /> 
+		
+	$!httpInclude.include("/footer.htm")
+	 
+</body>
+</html>

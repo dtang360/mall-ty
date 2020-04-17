@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>头像修改- $!{config.title} - Powered by wemalls business edition</title>
+<meta name="keywords" content="$!config.keywords" >
+<meta name="description" content="$!config.description" >
+<meta name="generator" content="wemalls learning version 10">
+<meta name="author" content="www.wemalls.cn">
+<meta name="copyright" content="wemalls Inc. All Rights Reserved">
+<!-- zysoft -->
+<link href="$!webPath/resources/style/shop/default/css/css.css" rel="stylesheet" type="text/css" />
+<link href="$!webPath/resources/style/shop/default/css/cpzs.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" class="library" src="$!webPath/resources/style/shop/default/js/public.js"></script>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script> 
+<script src="$!webPath/resources/style/shop/default/js/nav.js"></script>
+<!-- zysoft -->
+
+<meta name="copyright" content="zysoft Inc. All Rights Reserved">
+<link href="$!webPath/resources/style/system/front/default/css/public.css" type="text/css" rel="stylesheet" />
+<link href="$!webPath/resources/style/system/front/default/css/user.css" type="text/css" rel="stylesheet" />
+<script src="$!webPath/resources/js/jquery-1.8.3.min.js"></script>
+<script src="$!webPath/resources/js/jquery.validate.min.js"></script>
+<!-- <script src="$!webPath/resources/js/swfobject.js"></script> -->
+
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	jQuery("#theForm").validate({
+	    rules:{
+		  userLogo:{
+		   required :true,
+		    accept:"$!config.imageSuffix"
+		  }
+		 },
+		messages:{
+			userLogo:{required :"头像不能为空",accept:"系统不允许的文件类型"}
+		}
+	  });
+})
+
+function getFileUrl(sourceId) {
+    var url;
+    if (navigator.userAgent.indexOf("MSIE")>=1) { // IE
+        url = document.getElementById(sourceId).value;
+    } else if(navigator.userAgent.indexOf("Firefox")>0) { // Firefox
+        url = window.URL.createObjectURL(document.getElementById(sourceId).files.item(0));
+    } else if(navigator.userAgent.indexOf("Chrome")>0) { // Chrome
+        url = window.URL.createObjectURL(document.getElementById(sourceId).files.item(0));
+    }
+    return url;
+}
+
+	function preImg(sourceId, targetId) { 
+    	var url = getFileUrl(sourceId); 
+    	var imgPre = document.getElementById("userimg"); 
+    	imgPre.src = url; 
+} 
+</script>
+
+</head>
+<body>
+$!httpInclude.include("/top.htm")
+<div class="main">
+  $!httpInclude.include("/account/head.htm")
+  <div class="user_center">
+  <form action="$!webPath/buyer/upload_avatar.htm" method="post" enctype="multipart/form-data" name="theForm" id="theForm">
+  <input name="id" id="id" type="hidden" value="$!obj.id"/>
+				<table width="1200" border="0" cellspacing="0" cellpadding="0"
+					class="user_table">
+					<tr>
+						$!httpInclude.include("/buyer/account_nav.htm?op=account")
+						<td id="centerbg" valign="top">
+							<div class="buyer_position">
+								<div class="buyer_p_box">
+									<a href="$!webPath/buyer/account.htm">我的账户</a> > <span>修改头像</span>
+								</div>
+							</div>
+							<div class="productmain">
+								<div class="ordernav">
+									<ul class="orderul">
+										<li><a href='$!webPath/buyer/account.htm'>基本信息</a></li>
+										<li><a href='$!webPath/buyer/account_password.htm'>修改密码</a></li>
+										<li><a href='$!webPath/buyer/account_email.htm'>修改电子邮件</a></li>
+										<li><a href='$!webPath/buyer/account_mobile.htm'>修改手机号码</a></li>
+										<li class="this"><a
+											href='$!webPath/buyer/account_avatar.htm'>更换头像</a></li>
+									</ul>
+								</div>
+								<div class="ordercon">
+									<div class="modifyheadimg">
+										#if($!user.userLogo)
+										#set($img="$!webPath/$!user.userLogo.path/$!user.userLogo.name")
+										#else
+										#set($img="$!webPath/$!config.memberIcon.path/$!config.memberIcon.name")
+										#end <img src="$!img" id="userimg" width="132" height="132" />
+									</div>
+
+									<ul class="set1">
+										<li>
+											<!--       <span class="size13" ><input name="textfield" type="text" id="textfield1" /> -->
+											<!--       </span> --> <!-- 	  <span class="filebtn"><input name="button" type="button" id="button1" value=""/> -->
+											<!-- 	  </span> --> <span style="float: left;" class="file">
+												<input name="userLogo" type="file" id="userLogo"  style="height: 25px;margin:20px;"
+												onchange="preImg(this.id);"  />
+										</span> <span class="preview"> #if($!obj.userLogo) <img
+												src="$!webPath/resources/style/system/manage/blue/images/preview.jpg"
+												width="25" height="25" id="brandImgShow" /> #end
+										</span> <!-- 	  <span id="nothis"><strong class="q"></strong><strong class="w">最佳尺寸93*33，支持格式gif,jpg,jpeg,png</strong><strong class="c"></strong></span> -->
+											<div class="bigimgpre" id="brandImg" style="display: none;">
+												<img src="$!webPath/$!obj.userLogo.path/$!obj.userLogo.name" />
+											</div>
+										</li>
+									</ul>
+								</div>
+									<input type="submit" value="保&nbsp;存" 
+										style="width: 65px; height: 22px;margin-left:20px;" />
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+  </div>
+</div>
+   $!httpInclude.include("/footer.htm")
+</body>
+</html>

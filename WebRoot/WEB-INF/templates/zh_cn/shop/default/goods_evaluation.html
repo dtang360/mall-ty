@@ -1,0 +1,99 @@
+﻿       <div class="sppj">
+        <div class="title">
+          <h1 id="03"><a class="active">商品评价</a></h1>
+        </div>
+       <div class="ztpj">
+          <div class="left">整体评价：</div>
+          <div class="show_number clearfix">
+       <li>
+        <div class="atar_Show">
+          <p tip="$!CommUtil.null2Double($!{goods.description_evaluate})"></p>
+          #set($long = $!CommUtil.null2Double($!{goods.description_evaluate})/5*100)
+        </div>
+        <span></span>
+       </li>
+      </div>
+    <div class="clear"></div>
+       </div>
+
+
+  #if($!rows==0)
+  <div class="novalue"> 还没有评价内容 </div>
+  #else
+  #foreach($obj in $objs)
+	<div class=" yhdp clearfix">
+		<div class="yhtx">
+			<img src="$!webPath/resources/style/shop/default/images/yh.jpg"
+				width="80" height="80" />
+			<p>$!{obj.evaluate_user.userName}</p>
+		</div>
+		<div class="plnr">
+			<h1 class="font_03">
+				<a href="#" target="_blank">$!{obj.description_evaluate}</a>
+			</h1>
+			<div class="show_number1 clearfix">
+				<li>
+					<div class="atar_Show1">
+						<p tip1="$!{obj.evaluate_info}"></p>
+					</div> <span></span>
+				</li>
+			</div>
+			<div class="nr font_02">$!{obj.evaluate_info}</div>
+<!-- 			<div class=" pic"> -->
+<!-- 				<a class="preview" -->
+<!-- 					href="http://image.zhangxinxu.com/image/study/s/s256/mm1.jpg" -->
+<!-- 					title="张含韵"><img src="images/pj_02.jpg" width="60" height="60" /></a> -->
+<!-- 				<a class="preview" -->
+<!-- 					href="http://image.zhangxinxu.com/image/study/s/s256/mm2.jpg" -->
+<!-- 					title="某不知名美女"><img src="images/pj_03.jpg" width="60" -->
+<!-- 					height="60" /></a> <a class="preview" -->
+<!-- 					href="http://image.zhangxinxu.com/image/study/s/s256/mm3.jpg" -->
+<!-- 					title="某不知名美女"><img src="images/pj_04.jpg" width="60" -->
+<!-- 					height="60" /></a> -->
+<!-- 			</div> -->
+			<div></div>
+
+		</div>
+	</div>
+  #end
+
+	<div class="clear"></div>
+       <div class="badoo">
+       $!gotoPageAjaxHTML</div>
+         #end
+       </div>
+
+<!-- <div class="evaluation"> -->
+<!--   <div class="eva_bar_box"> -->
+<!--     <div class="eva_bar"> -->
+<!--       <div class="eva_bar_left"> -->
+<!--         <h4>与描述相符</h4> -->
+<!--         <strong>$!CommUtil.null2Double($!{goods.description_evaluate})</strong> </div> -->
+<!--       #set($long = $!CommUtil.null2Double($!{goods.description_evaluate})/5*100) -->
+<!--       <div class="eva_bar_right"> -->
+<!--         <div class="eva_scroller"> <span style="width:$!{long}%;"> <em>$!CommUtil.null2Double($!{goods.description_evaluate})</em> </span> </div> -->
+<!--         <ul class="scroller_ul"> -->
+<!--           <li>非常不满意</li> -->
+<!--           <li>不满意</li> -->
+<!--           <li>一般</li> -->
+<!--           <li>满意</li> -->
+<!--           <li>非常满意</li> -->
+<!--         </ul> -->
+<!--       </div> -->
+<!--     </div> -->
+<!--   </div> -->
+<!--   #if($!rows==0) -->
+<!--   <div class="novalue"> 还没有评价内容 </div> -->
+<!--   #else -->
+<!--   #foreach($obj in $objs) -->
+<!--   <div class="evalone"> -->
+<!--     <ul> -->
+<!--       <li><span class="blue evalonesp">$!{obj.evaluate_user.userName}</span>$!{obj.evaluate_info}</li> -->
+<!--       <li>$!CommUtil.formatShortDate($!obj.addTime)</li> -->
+<!--     </ul> -->
+<!--   </div> -->
+<!--   #end -->
+<!--   <div class="fenye"> -->
+<!--     <div class="fenyes">$!gotoPageAjaxHTML</div> -->
+<!--   </div> -->
+<!--   #end </div> -->

@@ -1,0 +1,10 @@
+/META-INF/
+/applicationContext-configuration.xml
+/applicationContext-security.xml
+/cn/
+/config.properties
+/ehcache.xml
+/jdbc.properties
+/jsontest.xml
+/log4j.properties
+/persistence.xml
