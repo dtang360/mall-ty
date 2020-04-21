@@ -125,6 +125,13 @@ jQuery(document).ready(function(){
         <td align="center">#if($!pay)是#else 否 #end</td>
         <td align="center" class="ac8">#if($!pay)<a href="$!webPath/admin/payment_set.htm?mark=weixin_wap&type=admin&pay=$!pay">禁用</a>#else<a href="$!webPath/admin/payment_set.htm?mark=weixin_wap&type=admin&pay=$!{pay}">启用</a>#end|<a href="$!webPath/admin/payment_edit.htm?mark=weixin_wap&type=admin">编辑</a></td>
       </tr>
+            <tr>
+        <td>微信小程序支付</td>
+        <td align="left">微信网站(<a href="http://weixin.qq.com" target="_blank">http://weixin.qq.com</a>) 微信，是一个生活方式，也是一个领先的支付平台<br /></td>
+        #set($pay=$!paymentTools.queryPayment("weixin_applet","admin"))
+        <td align="center">#if($!pay)是#else 否 #end</td>
+        <td align="center" class="ac8">#if($!pay)<a href="$!webPath/admin/payment_set.htm?mark=weixin_applet&type=admin&pay=$!pay">禁用</a>#else<a href="$!webPath/admin/payment_set.htm?mark=weixin_applet&type=admin&pay=$!{pay}">启用</a>#end|<a href="$!webPath/admin/payment_edit.htm?mark=weixin_applet&type=admin">编辑</a></td>
+      </tr>
       
       <tr>
         <td>微信扫码支付</td>

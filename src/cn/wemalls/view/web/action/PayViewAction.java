@@ -1686,6 +1686,75 @@ public class PayViewAction {
 
         return "";
     }
+    
+    /***
+     * 微信支付付款成功回调处理，你必须要返回SUCCESS信息给微信服务器，告诉微信服务器我已经收到支付成功的后台通知了。
+     * 不然的话，微信会一直调用该回调地址，当达到8次的时候还是没有收到SUCCESS的返回，微信服务器则认为此订单支付失败。
+     *
+     * 该回调地址是异步的。 这里可以处理数据库中的订单状态。
+     *
+     * @param response
+     * @throws IOException
+     * @throws JDOMException
+     */
+    @RequestMapping({"/wxapplet/paynotify.htm"})
+    public String wxapplet_notify_success(HttpServletRequest request, HttpServletResponse response) throws IOException, JDOMException, Exception {
+        InputStream inStream = request.getInputStream();
+        ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1){
+            outSteam.write(buffer, 0, len);
+        }
+        outSteam.close();
+        inStream.close();
+
+        /** 支付成功后，微信回调返回的信息 */
+        String result = new String(outSteam.toByteArray(), "utf-8");
+        Map<String, String> map = WxCommonUtil.doXMLParse(result);
+
+        for (Object keyValue : map.keySet()){
+            /** 输出返回的订单支付信息 */
+            logger.info(keyValue + "=" + map.get(keyValue));
+        }
+        //支付签名验证
+        String order_no = map.get("out_trade_no");
+        OrderForm order = null;
+        order = this.orderFormService.getObjById(CommUtil.null2Long(order_no));
+
+        if (map.get("result_code").toString().equalsIgnoreCase("SUCCESS") && (order.getOrder_status() < 20)){
+            order.setOrder_status(20);
+            order.setOut_order_id(map.get("transaction_id"));
+            order.setPayTime(new Date());
+            this.orderFormService.update(order);
+
+            update_goods_inventory(order);
+            OrderFormLog ofl = new OrderFormLog();
+            ofl.setAddTime(new Date());
+            ofl.setLog_info("微信公众号在线支付");
+            ofl.setLog_user(order.getUser());
+            ofl.setOf(order);
+            this.orderFormLogService.save(ofl);
+
+            // 邮件和短信通知,根据情况使用
+            if (this.configService.getSysConfig().isEmailEnable()){
+                send_order_email(request, order, order.getUser().getEmail(), "email_tobuyer_online_pay_ok_notify");
+                send_order_email(request, order, order.getStore().getUser().getEmail(), "email_toseller_online_pay_ok_notify");
+            }
+            if (this.configService.getSysConfig().isSmsEnbale()){
+                send_order_sms(request, order, order.getUser().getMobile(), "sms_tobuyer_online_pay_ok_notify");
+                send_order_sms(request, order, order.getStore().getUser().getMobile(), "sms_toseller_online_pay_ok_notify");
+            }
+
+            // 告诉微信服务器，我收到信息了，不要在调用回调方法(/pay)了
+            logger.info("-------------" + WxCommonUtil.setXML("SUCCESS", "OK"));
+            response.getWriter().write(WxCommonUtil.setXML("SUCCESS", "OK"));
+        }else{
+            logger.error("------微信异步回调失败-------");
+        }
+
+        return "";
+    }
 
     /**
      * 微信公众号支付前台页面回调

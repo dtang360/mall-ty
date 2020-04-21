@@ -2380,111 +2380,113 @@ public class CartViewAction {
     }
     
     
-    /**
-               * 小程序支付提交
-     */
-    @SecurityMapping(display = false, rsequence = 0, title = "wap订单支付", value = "/wxwap_submit.htm*", rtype = "buyer", rname = "购物流程3", rcode = "goods_cart", rgroup = "在线购物")
-    @RequestMapping({ "/wxapplet/pay_submit.htm" })
-    public String wxapplet_paymentSubmit(HttpServletRequest request,
-                                HttpServletResponse response, String payType, String order_id){
-        OrderForm of = this.orderFormService.getObjById(CommUtil.null2Long(order_id));
-
-        if (of != null && of.getOrder_status() == 10){
-            List payments = new ArrayList();
-            Map params = new HashMap();
-            // 1为平台支付:
-            if (this.configService.getSysConfig().getConfig_payment_type() == 1){
-                params.put("mark", payType);
-                params.put("type", "admin");
-                payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.type=:type", params, -1, -1);
-            }else{// 店铺支付
-                params.put("store_id", of.getStore().getId());
-                params.put("mark", payType);
-                payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.store.id=:store_id", params, -1, -1);
-            }
-            // 支付方式已经配置:wap支持支付宝wap支付以及微信公众号支付
-            if (payments.size() > 0){
-                of.setPayment((Payment) payments.get(0));
-                this.orderFormService.update(of);
-                //微信公众号支付
-                if (payType.equals("weixin_wap")){
-                    String APPID = of.getPayment().getWeixin_appId();
-                    String siteURL = CommUtil.getURL(request);
-                    String out_trade_no = of.getId().toString();
-
-                    return "redirect:https://open.weixin.qq.com/connect/oauth2/authorize?appid="
-                           + APPID
-                           + "&redirect_uri="
-                           + urlEncodeUTF8(siteURL
-                           + "/wechat/oauthCode.htm?sn="
-                           + out_trade_no)
-                           + "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
-                //货到付款
-                }else if (payType.equals("payafter")){
-				       String pay_session = CommUtil.randomString(32);
-				       request.getSession(false).setAttribute("pay_session", pay_session);
-//				       request.setAttribute("store_id",
-//				                    this.orderFormService.getObjById(CommUtil.null2Long(order_id)).getStore().getId());
-//				       request.setAttribute("order_id", order_id);
-				       return "redirect:" + CommUtil.getURL(request) +"/order_pay_payafter.htm?pay_session="+pay_session+"&order_id="+order_id;
-				// 支付宝手机网页支付       
-                }else if (payType.equals("alipay_wap")){
-                    String siteURL = CommUtil.getURL(request);
-                    AlipayConfig config = new AlipayConfig();
-                    config.setSeller_email(of.getPayment().getSeller_email());
-                    config.setKey(of.getPayment().getSafeKey());
-                    config.setPartner(of.getPayment().getPartner());
-                    config.setSign_type("RSA");
-                    // 把请求参数打包成数组
-                    Map<String, String> sParaTemp = new HashMap<String, String>();
-                    // 调用的接口名，无需修改
-                    sParaTemp.put("service", "alipay.wap.create.direct.pay.by.user");
-                    // 合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
-                    sParaTemp.put("partner", of.getPayment().getPartner());
-                    // 收款支付宝账号，以2088开头由16位纯数字组成的字符串，一般情况下收款账号就是签约账号
-                    sParaTemp.put("seller_id", of.getPayment().getPartner());
-                    sParaTemp.put("_input_charset", config.getInput_charset());
-                    // 支付类型 ，无需修改
-                    sParaTemp.put("payment_type", "1");
-
-                    sParaTemp.put("notify_url", siteURL + "/alipay/alipay_notify.htm");
-                    sParaTemp.put("return_url", siteURL + "/alipay/alipay_return.htm");
-                    sParaTemp.put("out_trade_no", of.getId().toString());
-                    sParaTemp.put("subject", "订单号为" + of.getOrder_id());
-                    // 价格测试改为1分钱
-                    //sParaTemp.put("total_fee", "0.01");
-                    sParaTemp.put("total_fee", of.getTotalPrice().toPlainString());
-                    sParaTemp.put("show_url", "/index.htm");
-                    sParaTemp.put("body", "支付宝wap支付");
-                    // 其他业务参数根据在线开发文档，添加参数.文档地址:https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.2Z6TSk&treeId=60&articleId=103693&docType=1
-                    String sHtmlText = AlipaySubmit.buildRequestWap(config, sParaTemp, "get", "确定");
-                    try {
-                        response.setCharacterEncoding("UTF-8");
-                        response.setContentType("text/html");
-                        response.getWriter().print(sHtmlText);
-//                        StorePrinter s=new StorePrinter();
-//                        s.setStore(of.getStore());
-//                        s.set
-                        orderFormPrint(of);
-                        
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }else{
-                    // 支付方式错误
-                    return "redirect:" + CommUtil.getURL(request) + "/index.htm?payMethodError";
-                }
-            }else{
-                // 支付方式未配置
-                return "redirect:" + CommUtil.getURL(request) + "/index.htm?noPayMethod";
-            }
-        }else{
-            // 该订单状态不正确，不能进行付款！
-            return "redirect:" + CommUtil.getURL(request) + "/index.htm?orderError";
-        }
-
-        return null;
-    }
+//    /**
+//               * 小程序支付提交
+//     */
+//    @SecurityMapping(display = false, rsequence = 0, title = "小程序订单支付", value = "/wxwap_submit.htm*", rtype = "buyer", rname = "购物流程3", rcode = "goods_cart", rgroup = "在线购物")
+//    @RequestMapping({ "/wxapplet/pay_submit.htm" })
+//    public void wxapplet_paymentSubmit(HttpServletRequest request,
+//                                HttpServletResponse response, String payType, String order_id){
+//        OrderForm of = this.orderFormService.getObjById(CommUtil.null2Long(order_id));
+//
+//        if (of != null && of.getOrder_status() == 10){
+//            List payments = new ArrayList();
+//            Map params = new HashMap();
+//            // 1为平台支付:
+//            if (this.configService.getSysConfig().getConfig_payment_type() == 1){
+//                params.put("mark", payType);
+//                params.put("type", "admin");
+//                payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.type=:type", params, -1, -1);
+//            }else{// 店铺支付
+//                params.put("store_id", of.getStore().getId());
+//                params.put("mark", payType);
+//                payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.store.id=:store_id", params, -1, -1);
+//            }
+//            // 支付方式已经配置:wap支持支付宝wap支付以及微信公众号支付
+//            if (payments.size() > 0){
+//                of.setPayment((Payment) payments.get(0));
+//                this.orderFormService.update(of);
+//                //微信小程序支付
+//                if (payType.equals("weixin_wap")){
+//                    String APPID = of.getPayment().getWeixin_appId();
+//                    String siteURL = CommUtil.getURL(request);
+//                    String out_trade_no = of.getId().toString();
+//                    return "redirect:https://open.weixin.qq.com/connect/oauth2/authorize?appid="
+//                           + APPID
+//                           + "&redirect_uri="
+//                           + urlEncodeUTF8(siteURL
+//                           + "/wechat/oauthCode.htm?sn="
+//                           + out_trade_no)
+//                           + "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
+//                //货到付款
+//                }
+//                
+////                else if (payType.equals("payafter")){
+////				       String pay_session = CommUtil.randomString(32);
+////				       request.getSession(false).setAttribute("pay_session", pay_session);
+//////				       request.setAttribute("store_id",
+//////				                    this.orderFormService.getObjById(CommUtil.null2Long(order_id)).getStore().getId());
+//////				       request.setAttribute("order_id", order_id);
+////				       return "redirect:" + CommUtil.getURL(request) +"/order_pay_payafter.htm?pay_session="+pay_session+"&order_id="+order_id;
+//				// 支付宝手机网页支付       
+////                }else if (payType.equals("alipay_wap")){
+////                    String siteURL = CommUtil.getURL(request);
+////                    AlipayConfig config = new AlipayConfig();
+////                    config.setSeller_email(of.getPayment().getSeller_email());
+////                    config.setKey(of.getPayment().getSafeKey());
+////                    config.setPartner(of.getPayment().getPartner());
+////                    config.setSign_type("RSA");
+////                    // 把请求参数打包成数组
+////                    Map<String, String> sParaTemp = new HashMap<String, String>();
+////                    // 调用的接口名，无需修改
+////                    sParaTemp.put("service", "alipay.wap.create.direct.pay.by.user");
+////                    // 合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串，查看地址：https://b.alipay.com/order/pidAndKey.htm
+////                    sParaTemp.put("partner", of.getPayment().getPartner());
+////                    // 收款支付宝账号，以2088开头由16位纯数字组成的字符串，一般情况下收款账号就是签约账号
+////                    sParaTemp.put("seller_id", of.getPayment().getPartner());
+////                    sParaTemp.put("_input_charset", config.getInput_charset());
+////                    // 支付类型 ，无需修改
+////                    sParaTemp.put("payment_type", "1");
+////
+////                    sParaTemp.put("notify_url", siteURL + "/alipay/alipay_notify.htm");
+////                    sParaTemp.put("return_url", siteURL + "/alipay/alipay_return.htm");
+////                    sParaTemp.put("out_trade_no", of.getId().toString());
+////                    sParaTemp.put("subject", "订单号为" + of.getOrder_id());
+////                    // 价格测试改为1分钱
+////                    //sParaTemp.put("total_fee", "0.01");
+////                    sParaTemp.put("total_fee", of.getTotalPrice().toPlainString());
+////                    sParaTemp.put("show_url", "/index.htm");
+////                    sParaTemp.put("body", "支付宝wap支付");
+////                    // 其他业务参数根据在线开发文档，添加参数.文档地址:https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.2Z6TSk&treeId=60&articleId=103693&docType=1
+////                    String sHtmlText = AlipaySubmit.buildRequestWap(config, sParaTemp, "get", "确定");
+////                    try {
+////                        response.setCharacterEncoding("UTF-8");
+////                        response.setContentType("text/html");
+////                        response.getWriter().print(sHtmlText);
+//////                        StorePrinter s=new StorePrinter();
+//////                        s.setStore(of.getStore());
+//////                        s.set
+////                        orderFormPrint(of);
+////                        
+////                    } catch (IOException e){
+////                        e.printStackTrace();
+////                    }
+////                }
+//            else{
+//                    // 支付方式错误
+////                    return "redirect:" + CommUtil.getURL(request) + "/index.htm?payMethodError";
+//                }
+//            }else{
+//                // 支付方式未配置
+////                return "redirect:" + CommUtil.getURL(request) + "/index.htm?noPayMethod";
+//            }
+//        }else{
+//            // 该订单状态不正确，不能进行付款！
+////            return "redirect:" + CommUtil.getURL(request) + "/index.htm?orderError";
+//        }
+//
+////        return null;
+//    }
     
     public static String urlEncodeUTF8(String source){  
         String result = source;  
@@ -2631,8 +2633,8 @@ public class CartViewAction {
             params.put("package", "prepay_id=" + map.get("prepay_id")); //格式必须为 prepay_id=***
             params.put("signType", "MD5"); //签名的方式必须是MD5
             /**
-             * 获取预支付prepay_id后，需要再次签名，此次签名是用于前端js中的wx.chooseWXPay中的paySign。
-             * 参与签名的参数有5个，分别是：appId、timeStamp、nonceStr、package、signType 注意参数名称的大小写
+		             * 获取预支付prepay_id后，需要再次签名，此次签名是用于前端js中的wx.chooseWXPay中的paySign。
+		             * 参与签名的参数有5个，分别是：appId、timeStamp、nonceStr、package、signType 注意参数名称的大小写
              */
             String paySign = WxCommonUtil.createSignMD5("UTF-8", params, API_KEY);
             //预支付单号
@@ -2640,12 +2642,10 @@ public class CartViewAction {
             params.put("paySign", paySign); //支付签名
             //付款成功后同步请求的URL，请求我们自定义的支付成功的页面，展示给用户
             params.put("sendUrl", siteURL + "/wechat/paysuccess.htm?totalPrice=" + totalPrice);
-
             //获取用户的微信客户端版本号，用于前端支付之前进行版本判断，微信版本低于5.0无法使用微信支付
             String userAgent = request.getHeader("user-agent");
             char agent = userAgent.charAt(userAgent.indexOf("MicroMessenger") + 15);
             params.put("agent", new String(new char[] { agent }));
-
             /**2、获取access_token作为参数传递,由于access_token有有效期限制，和调用次数限制，可以缓存到session或者数据库中.有效期设置为小于7200秒*/
             WxToken wxtoken = WxCommonUtil.getToken(APPID, APP_SECRET);
             String token = wxtoken.getAccessToken();
@@ -2686,6 +2686,170 @@ public class CartViewAction {
             response.setHeader("Cache-Control", "no-cache");
             response.setCharacterEncoding("UTF-8");
 
+            try {
+                PrintWriter writer = response.getWriter();
+                writer.print(json);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        } catch (JDOMException e){
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    
+    /**
+              *  小程序   统一下单
+              *  生成微信订单数据以及微信支付需要的签名等信息，传输到前端，发起调用JSAPI支付
+     *
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping({"/wxapplet/wxpay.htm"})
+    public void wxapplet_wxpay(HttpServletRequest request, HttpServletResponse response,String payType,String openId,String orderId, /*订单号*/ String orderSn, String productName, String totalPrice, String clientUrl) throws Exception {
+        String APPID = null;
+        String APP_SECRET = null;
+        String MCH_ID = null;
+        String API_KEY = null;
+        String siteURL = CommUtil.getURL(request);
+        String UNI_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";        
+       
+        // 支付方式已经配置
+        logger.info("微信确认支付获取openId={},sn={}" + openId, orderSn);
+        OrderForm of = null;
+        String amount = null;
+        try {
+        	of = this.orderFormService.getObjById(CommUtil.null2Long(orderId));
+        	if(null!=of) {
+        		List payments = new ArrayList();
+        		Map params = new HashMap();
+        		// 1为平台支付:
+        		if (this.configService.getSysConfig().getConfig_payment_type() == 1){
+        			params.put("mark", payType);
+        			params.put("type", "admin");
+        			payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.type=:type", params, -1, -1);
+        		}else{// 店铺支付
+        			params.put("store_id", of.getStore().getId());
+        			params.put("mark", payType);
+        			payments = this.paymentService.query("select obj from Payment obj where obj.mark=:mark and obj.store.id=:store_id", params, -1, -1);
+        		}     
+        		if (payments.size() > 0){
+        			of.setPayment((Payment) payments.get(0));
+        		}
+        	}
+
+        } catch (Exception e){
+        	logger.error("微信确认支付查询paymentLog异常=" + e.getMessage());
+        	e.printStackTrace();
+        }
+        if(of == null){
+            amount = "";
+            logger.info("微信确认支付查询orderForm=null");
+        }else{
+//            APPID = "wxcb52029f33555e75";
+//            APP_SECRET = "de174d1e8ae44b9b0140a55fd3e07412";
+//            MCH_ID = "1563709181";
+//            API_KEY = "ABCD1EFGH2IJKL3Mnop4qrst5uvwx6yz";
+            APPID = of.getPayment().getWeixin_appId();
+            APP_SECRET = of.getPayment().getWeixin_appSecret();
+            MCH_ID = of.getPayment().getWeixin_partnerId();
+            API_KEY = of.getPayment().getWeixin_paySignKey();
+            // 将元转换为分
+            amount = of.getTotalPrice().multiply(new BigDecimal(100)).setScale(0).toString();
+            logger.info("微信确认支付元转分成功amount={}", amount);
+        }
+        SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+        parameters.put("appid", APPID);
+        parameters.put("mch_id", MCH_ID);
+        parameters.put("nonce_str", WxCommonUtil.createNoncestr());
+        parameters.put("body", productName);// 商品名称
+        // 订单号
+        parameters.put("out_trade_no", orderSn);
+        // 订单金额以分为单位，只能为整数 */
+        //parameters.put("total_fee", "1");//测试用的金额1分钱
+        parameters.put("total_fee", amount);
+        // 客户端本地ip 
+        parameters.put("spbill_create_ip", request.getRemoteAddr());
+        // 支付回调地址
+        parameters.put("notify_url", siteURL + "/wxapplet/paynotify.htm");
+        // 支付方式为JSAPI支付
+        parameters.put("trade_type", "JSAPI");
+        // 用户微信的openid，当trade_type为JSAPI的时候，该属性字段必须设置 */
+        parameters.put("openid", openId);
+        // 使用MD5进行签名，编码必须为UTF-8 */
+        String sign = WxCommonUtil.createSignMD5("UTF-8", parameters, API_KEY);
+        // 将签名结果加入到map中，用于生成xml格式的字符串*/
+        parameters.put("sign", sign);
+        // 生成xml结构的数据，用于统一下单请求的xml请求数据 */
+        String requestXML = WxCommonUtil.getRequestXml(parameters);
+        logger.info("请求统一支付requestXML：" + requestXML);
+
+        try {
+            // 1、使用POST请求统一下单接口，获取预支付单号prepay_id
+            String result = WxCommonUtil.httpsRequestString(UNI_URL, "POST", requestXML);
+            logger.info("请求统一支付result:" + result);
+            // 解析微信返回的信息，以Map形式存储便于取值
+            Map<String, String> map = WxCommonUtil.doXMLParse(result);
+            logger.info("预支付单号prepay_id为:" + map.get("prepay_id"));
+            // 全局map，该map存放前端ajax请求的返回值信息，包括wx.config中的配置参数值，也包括wx.chooseWXPay中的配置参数值
+            SortedMap<Object, Object> params = new TreeMap<Object, Object>();
+            params.put("appId", APPID);
+            params.put("timeStamp", new Date().getTime() + ""); //时间戳
+            params.put("nonceStr", WxCommonUtil.createNoncestr()); //随机字符串
+            params.put("package", "prepay_id=" + map.get("prepay_id")); //格式必须为 prepay_id=***
+            params.put("signType", "MD5"); //签名的方式必须是MD5
+            // 获取预支付 prepay_id 后 需要再次签名，此次签名是用于前端js中的wx.chooseWXPay中的paySign。
+		    // 参与签名的参数有5个 , 分别是：appId、timeStamp、nonceStr、package、signType 注意参数名称的大小写             
+            String paySign = WxCommonUtil.createSignMD5("UTF-8", params, API_KEY);
+            // 预支付单号
+            params.put("packageValue", "prepay_id=" + map.get("prepay_id"));
+            params.put("paySign", paySign); //支付签名
+            // 付款成功后同步请求的URL 请求我们自定义的支付成功的页面，展示给用户
+            params.put("sendUrl", siteURL + "/wechat/paysuccess.htm?totalPrice=" + totalPrice);
+            // 获取用户的微信客户端版本号 用于前端支付之前进行版本判断，微信版本低于5.0无法使用微信支付
+            String userAgent = request.getHeader("user-agent");
+            char agent = userAgent.charAt(userAgent.indexOf("MicroMessenger") + 15);
+            params.put("agent", new String(new char[] { agent }));
+            // 2.获取 access_token 作为参数传递,由于access_token有有效期限制，和调用次数限制，可以缓存到session或者数据库中.有效期设置为小于7200秒*/
+            WxToken wxtoken = WxCommonUtil.getToken(APPID, APP_SECRET);
+            String token = wxtoken.getAccessToken();
+            logger.info("获取的token值为:" + token);
+            // 3.获取凭证ticket发起GET请求
+            String requestUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=" + token;
+            logger.info("接口调用凭证ticket的requestUrl：" + requestUrl);
+            String ticktresult = WxCommonUtil.httpsRequestString(requestUrl, "GET", null);            
+            // 微信查询
+            JSONObject jsonresult = JSONObject.fromObject(ticktresult);
+            // JSONObject jsonObject = WxCommonUtil.httpsRequest(requestUrl, "GET", null);
+            // 使用JSSDK支付，需要另一个凭证，也就是jsapi_ticket。这个是JSSDK中使用到的。
+            String jsapi_ticket = jsonresult.getString("ticket");
+            logger.info("jsapi_ticket：" + jsapi_ticket);
+            // 获取到 ticket 凭证之后，需要进行一次签名
+            String config_nonceStr = WxCommonUtil.createNoncestr();// 获取随机字符串
+            long config_timestamp = new Date().getTime();// 时间戳
+            // 加入签名的参数有4个，分别是： noncestr、jsapi_ticket、timestamp、url，注意字母全部为小写
+            SortedMap<Object, Object> configMap = new TreeMap<Object, Object>();
+            configMap.put("noncestr", config_nonceStr);
+            configMap.put("jsapi_ticket", jsapi_ticket);
+            configMap.put("timestamp", config_timestamp + "");
+//            configMap.put("url", clientUrl);
+            // 该签名是用于前端js 中 wx.config配置中的signature值。
+            String config_sign = WxCommonUtil.createSignSHA1("UTF-8", configMap);
+            // 将config_nonceStr、jsapi_ticket 、config_timestamp、config_sign 一同传递到前端
+            // 这几个参数名称和上面获取预支付 prepay_id 使用的参数名称是不一样的，不要混淆了。
+            // 这几个参数是提供给前端js代码在调用 wx.config 中进行配置的参数，wx.config里面的signature值就是这个config_sign的值，以此类推
+            params.put("config_nonceStr", config_nonceStr);
+            params.put("config_timestamp", config_timestamp + "");
+            params.put("config_sign", config_sign);
+            // 将map转换为json字符串，传递给前端ajax回调
+            String json = JSONArray.fromObject(params).toString();
+            logger.info("用于wx.config配置的json：" + json);
+            response.setContentType("text/plain");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
             try {
                 PrintWriter writer = response.getWriter();
                 writer.print(json);
@@ -2925,10 +3089,10 @@ public class CartViewAction {
     @SecurityMapping(display = false, rsequence = 0, title = "小程序订单货到付款", value = "/order_pay_payafter.htm*", rtype = "buyer", rname = "购物流程3", rcode = "goods_cart", rgroup = "在线购物")
     @RequestMapping({ "/wxapplet/order_pay_payafter.htm" })
     public void wxapplet_order_pay_payafter(HttpServletRequest request, HttpServletResponse response, String payType,
-                                           String order_id, String pay_msg, String pay_session) throws Exception {
+                                           String order_id, String pay_msg) throws Exception {
     	Map resMap=new HashMap();
-        String pay_session1 = CommUtil.null2String(request.getSession(false).getAttribute("pay_session"));
-        if (pay_session1.equals(pay_session)){
+//        String pay_session1 = CommUtil.null2String(request.getSession(false).getAttribute("pay_session"));
+//        if (pay_session1.equals(pay_session)){
             OrderForm of = this.orderFormService.getObjById(CommUtil.null2Long(order_id));
             if(pay_msg!=null&!"".equals(pay_msg)){
             of.setPay_msg(pay_msg);
@@ -2961,12 +3125,12 @@ public class CartViewAction {
             resMap.put("op_title", "货到付款提交成功，等待卖家发货！");
             orderFormPrint(of);
             resMap.put("url", CommUtil.getURL(request) + "/buyer/order.htm");
-        }else{
+//        }else{
 //            mv = new JModelAndView("error.html", this.configService.getSysConfig(),
 //                                   this.userConfigService.getUserConfig(), 1, request, response);
-        	resMap.put("op_title", "订单已经支付，禁止重复支付！");
-        	resMap.put("url", CommUtil.getURL(request) + "/buyer/order.htm");
-        }
+//        	resMap.put("op_title", "订单已经支付，禁止重复支付！");
+//        	resMap.put("url", CommUtil.getURL(request) + "/buyer/order.htm");
+//        }
         String[] propertys={"op_title","url"};
         WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
     }
