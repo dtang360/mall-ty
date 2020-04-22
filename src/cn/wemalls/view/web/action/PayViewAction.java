@@ -1708,7 +1708,6 @@ public class PayViewAction {
         }
         outSteam.close();
         inStream.close();
-
         /** 支付成功后，微信回调返回的信息 */
         String result = new String(outSteam.toByteArray(), "utf-8");
         Map<String, String> map = WxCommonUtil.doXMLParse(result);
@@ -1727,7 +1726,6 @@ public class PayViewAction {
             order.setOut_order_id(map.get("transaction_id"));
             order.setPayTime(new Date());
             this.orderFormService.update(order);
-
             update_goods_inventory(order);
             OrderFormLog ofl = new OrderFormLog();
             ofl.setAddTime(new Date());
@@ -1735,7 +1733,6 @@ public class PayViewAction {
             ofl.setLog_user(order.getUser());
             ofl.setOf(order);
             this.orderFormLogService.save(ofl);
-
             // 邮件和短信通知,根据情况使用
             if (this.configService.getSysConfig().isEmailEnable()){
                 send_order_email(request, order, order.getUser().getEmail(), "email_tobuyer_online_pay_ok_notify");

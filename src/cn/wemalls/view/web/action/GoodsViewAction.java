@@ -381,6 +381,8 @@ public class GoodsViewAction {
     @RequestMapping({"/wx/goods.htm"})
     public void wxGoods(HttpServletRequest request, HttpServletResponse response, String id){
         Map resMap = new HashMap();
+        float total_count = 0;
+        List<StoreCart> cart = this.storeCartService.cart_calc_wxapplet(request,false);
         String wemalls_view_type = CookitTools.Get_View_Type(request);
         Goods obj = this.goodsService.getObjById(Long.valueOf(Long.parseLong(id)));
         if (obj.getGoods_status() == 0){// 商品上架状态
@@ -460,7 +462,14 @@ public class GoodsViewAction {
                 	accessory=obj.getGoods_photos().get(i);
                 	goods_photos.add(accessory);
                 }
+                
+                // 计算购物车内商品总价
+                for (Object type = cart.iterator(); ((Iterator) type).hasNext();){
+                    StoreCart sc1 = (StoreCart) ((Iterator) type).next();
+                    total_count += sc1.getGcs().size();
+                }
                resMap.put("goods_photos",goods_photos); 
+               resMap.put("cartSize",total_count);
                 
             }else{// 店铺状态异常
                 resMap.put("op_title", "店铺未开通，拒绝访问");

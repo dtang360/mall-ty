@@ -482,8 +482,10 @@ public class CartViewAction {
     		goodsCart.setGoods(goods);
     		goodsCart.setCount(1);
     		goodsCart.setPrice(goods.getGoods_current_price());
+    		goodsCart.setChecked(true);
     		gcs.add(goodsCart);    		
     		sc.setGcs(gcs);
+    		sc.setChecked(true);
     		cart.add(sc);
     	}
     	return (List<StoreCart>) cart;
@@ -1077,6 +1079,7 @@ public class CartViewAction {
         }
 
         Map map = new HashMap();
+        map.put("cartSize",total_count);
         map.put("count", Float.valueOf(count));
         map.put("total_count", Float.valueOf(total_count));
         map.put("total_price", Double.valueOf(total_price));
@@ -1974,9 +1977,11 @@ public class CartViewAction {
     @SecurityMapping(display = false, rsequence = 0, title = "完成订单提交进入支付", value = "/goods_cart3.htm*", rtype = "buyer", rname = "购物流程3", rcode = "goods_cart", rgroup = "在线购物")
     @RequestMapping({ "/wxapplet/goods_cart3.htm" })
     public void wxapplet_Goods_cart3(HttpServletRequest request, HttpServletResponse response, 
-                                    String store_id, String addr_id, String coupon_id,String delivery_way,String pick_store) throws Exception {
+                                    String store_id, String addr_id, String coupon_id,String delivery_way,String pick_store,String goods_id,String goods_count,String goods_price) throws Exception {
     	Map resMap = new HashMap();
         String cart_session1 = (String) request.getSession(false).getAttribute("cart_session");
+        //在这里将立即购买商品加入orderFrom
+        
         List<StoreCart> cart = cart_calc(request);
         if (cart != null){
 //            if (CommUtil.null2String(cart_session1).equals(cart_session)){
@@ -1984,7 +1989,6 @@ public class CartViewAction {
         	//根据webform页面提交信息  生成orderFrom订单数据，并保存
                 WebForm wf = new WebForm();
                 OrderForm of = (OrderForm) wf.toPo(request, OrderForm.class);
-                
                 of.setAddTime(new Date());
                 of.setOrder_id(SecurityUserHolder.getCurrentUser().getId()
                                + CommUtil.formatTime("yyyyMMddHHmmss", new Date()));
@@ -2012,8 +2016,35 @@ public class CartViewAction {
                     of.setCi(ci);
                     of.setTotalPrice(BigDecimal.valueOf(CommUtil.subtract(of.getTotalPrice(), ci.getCoupon().getCoupon_amount())));
                 }
-                of.setOrder_type("web");
+                of.setOrder_type("wxapplet");
                 this.orderFormService.save(of);
+                
+                //将立即购买商品加入goodscart
+                if(null!=goods_id&&0<goods_id.length()) {
+//                	List gcs=new ArrayList();
+                	//gcs.add(gCart);
+                	//保存storecart
+                	StoreCart sc=new StoreCart();
+//                	sc.setGcs(gcs);
+                	sc.setAddTime(new Date());
+                	sc.setUser(SecurityUserHolder.getCurrentUser());
+                	sc.setTotal_price(BigDecimal.valueOf(CommUtil.null2Double(goods_price)));
+                	sc.setSc_status(1);
+                	sc.setChecked(true);
+                	this.storeCartService.save(sc);
+                	
+                	//保存goodscart
+                	GoodsCart gCart=new GoodsCart();
+                	Goods goods=this.goodsService.getObjById(CommUtil.null2Long(goods_id));           
+                	gCart.setAddTime(new Date());
+                	gCart.setGoods(goods);
+                	gCart.setCount(CommUtil.null2Float(goods_count));
+                	gCart.setPrice(BigDecimal.valueOf(CommUtil.null2Double(goods_price)));
+                	gCart.setSc(sc);
+                	gCart.setOf(of);
+                	gCart.setChecked(true);
+                	this.goodsCartService.save(gCart);
+                }         
                 
                 //修改商品状态，及库存数量
                 GoodsCart gc;
