@@ -3,7 +3,6 @@ package cn.wemalls.core.base;
 /**
  * 系统公共静态参数
  * @author Auser
- *
  */
 public class AppGlobal {
     public static final String TOKEN = "token";
