@@ -2749,10 +2749,6 @@ public class CartViewAction {
             amount = "";
             logger.info("微信确认支付查询orderForm=null");
         }else{
-//            APPID = "wxcb52029f33555e75";
-//            APP_SECRET = "de174d1e8ae44b9b0140a55fd3e07412";
-//            MCH_ID = "1563709181";
-//            API_KEY = "ABCD1EFGH2IJKL3Mnop4qrst5uvwx6yz";
             APPID = of.getPayment().getWeixin_appId();
             APP_SECRET = of.getPayment().getWeixin_appSecret();
             MCH_ID = of.getPayment().getWeixin_partnerId();
