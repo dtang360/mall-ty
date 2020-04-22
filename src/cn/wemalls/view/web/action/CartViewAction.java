@@ -1065,7 +1065,6 @@ public class CartViewAction {
                 cart.add(sc33);
             }
         }
-
         // 计算购物车内商品总价
         for (Object type = cart.iterator(); ((Iterator) type).hasNext();){
             StoreCart sc1 = (StoreCart) ((Iterator) type).next();
