@@ -320,6 +320,7 @@ public class OrderBuyerAction {
 
         return mv;
     }
+    
 
     /**
      * 订单取消确认
@@ -360,6 +361,53 @@ public class OrderBuyerAction {
         }
 
         return "redirect:order.htm?currentPage=" + currentPage;
+    }
+    
+    /**
+     * 订单取消确认
+     * @param request
+     * @param response
+     * @param id
+     * @param currentPage
+     * @param state_info
+     * @param other_state_info
+     * @return
+     * @throws Exception
+     */
+    @SecurityMapping(display = false, rsequence = 0, title = "订单取消确认", value = "/buyer/order_cancel_save.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
+    @RequestMapping({"/wxapplet/buyer/order_cancel_save.htm"})
+    public void wxapplet_order_cancel_save(HttpServletRequest request, HttpServletResponse response, String id, String state_info, String other_state_info) throws Exception {
+    	Map resMap=new HashMap();
+    	OrderForm obj = this.orderFormService.getObjById(CommUtil.null2Long(id));
+        if (obj.getUser().getId().equals(SecurityUserHolder.getCurrentUser().getId())){
+            obj.setOrder_status(0);
+            this.orderFormService.update(obj);
+            OrderFormLog ofl = new OrderFormLog();
+            ofl.setAddTime(new Date());
+            ofl.setLog_info("取消订单");
+            ofl.setLog_user(SecurityUserHolder.getCurrentUser());
+            ofl.setOf(obj);
+            if ("other".equals(state_info)){
+                ofl.setState_info(other_state_info);
+            }else{
+                ofl.setState_info(state_info);
+            }
+            this.orderFormLogService.save(ofl);
+            if (this.configService.getSysConfig().isEmailEnable()){
+                send_email(request, obj, "email_toseller_order_cancel_notify");
+            }
+            if (this.configService.getSysConfig().isSmsEnbale()){
+                send_sms(request, obj, obj.getStore().getUser().getMobile(), "sms_toseller_order_cancel_notify");
+            }
+            resMap.put("resultCode","success");
+        	resMap.put("resultMsg","success");
+        }else {
+        	resMap.put("resultCode","error");
+        	resMap.put("resultMsg","请登录");
+        }      
+        String[] propertys={"resultCode","resultMSG"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
+        
     }
 
     @SecurityMapping(display = false, rsequence = 0, title = "收货确认", value = "/buyer/order_cofirm.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
@@ -494,6 +542,100 @@ public class OrderBuyerAction {
         String url = "redirect:order.htm?currentPage=" + currentPage;
 
         return url;
+    }
+    
+    /**
+     * 小程序买家确认收货
+     * @param request
+     * @param response
+     * @param id
+     * @param currentPage
+     * @return
+     * @throws Exception
+     */
+    @SecurityMapping(display = false, rsequence = 0, title = "小程序收货确认保存", value = "/buyer/order_cofirm_save.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
+    @RequestMapping({"/wxapplet/buyer/order_cofirm_save.htm"})
+    public void wxapplet_order_cofirm_save(HttpServletRequest request, HttpServletResponse response, String id, String currentPage) throws Exception {
+        Map resMap=new HashMap();
+    	OrderForm obj = this.orderFormService.getObjById(CommUtil.null2Long(id));
+        if (obj.getUser().getId().equals(SecurityUserHolder.getCurrentUser().getId())){
+            obj.setOrder_status(40);
+            boolean ret = this.orderFormService.update(obj);
+            if (ret){
+                OrderFormLog ofl = new OrderFormLog();
+                ofl.setAddTime(new Date());
+                ofl.setLog_info("确认收货");
+                ofl.setLog_user(SecurityUserHolder.getCurrentUser());
+                ofl.setOf(obj);
+                this.orderFormLogService.save(ofl);
+                if (this.configService.getSysConfig().isEmailEnable()){
+                    send_email(request, obj, "email_toseller_order_receive_ok_notify");
+                }
+                if (this.configService.getSysConfig().isSmsEnbale()){
+                    send_sms(request, obj, obj.getStore().getUser().getMobile(), "sms_toseller_order_receive_ok_notify");
+                }
+                if (obj.getPayment().getMark().equals("balance")){
+                    User seller = this.userService.getObjById(obj.getStore().getUser().getId());
+                    if (this.configService.getSysConfig().getBalance_fenrun() == 1){
+                        Map params = new HashMap();
+                        params.put("type", "admin");
+                        params.put("mark", "balance");
+                        List payments = this.paymentService.query("select obj from Payment obj where obj.type=:type and obj.mark=:mark", params, -1, -1);
+                        Payment shop_payment = new Payment();
+                        if (payments.size() > 0){
+                            shop_payment = (Payment)payments.get(0);
+                        }
+                        double shop_availableBalance = CommUtil.null2Double(obj.getTotalPrice()) * CommUtil.null2Double(shop_payment.getBalance_divide_rate());
+                        User admin = this.userService.getObjByProperty("userName", "admin");
+                        admin.setAvailableBalance(BigDecimal.valueOf(CommUtil.add(admin.getAvailableBalance(), Double.valueOf(shop_availableBalance))));
+                        this.userService.update(admin);
+                        PredepositLog log = new PredepositLog();
+                        log.setAddTime(new Date());
+                        log.setPd_log_user(seller);
+                        log.setPd_op_type("分润");
+                        log.setPd_log_amount(BigDecimal.valueOf(shop_availableBalance));
+                        log.setPd_log_info("订单" + obj.getOrder_id() + "确认收货平台分润获得预存款");
+                        log.setPd_type("可用预存款");
+                        this.predepositLogService.save(log);
+                        double seller_availableBalance = CommUtil.null2Double(obj.getTotalPrice()) - shop_availableBalance;
+                        seller.setAvailableBalance(BigDecimal.valueOf(CommUtil.add(seller.getAvailableBalance(), Double.valueOf(seller_availableBalance))));
+                        this.userService.update(seller);
+                        PredepositLog log1 = new PredepositLog();
+                        log1.setAddTime(new Date());
+                        log1.setPd_log_user(seller);
+                        log1.setPd_op_type("增加");
+                        log1.setPd_log_amount(BigDecimal.valueOf(seller_availableBalance));
+                        log1.setPd_log_info("订单" + obj.getOrder_id() + "确认收货增加预存款");
+                        log1.setPd_type("可用预存款");
+                        this.predepositLogService.save(log1);
+                        User buyer = obj.getUser();
+                        buyer.setFreezeBlance(BigDecimal.valueOf(CommUtil.subtract(buyer.getFreezeBlance(), obj.getTotalPrice())));
+                        this.userService.update(buyer);
+                    }else{
+                        seller.setAvailableBalance(BigDecimal.valueOf(CommUtil.add(seller.getAvailableBalance(), obj.getTotalPrice())));
+                        this.userService.update(seller);
+                        PredepositLog log = new PredepositLog();
+                        log.setAddTime(new Date());
+                        log.setPd_log_user(seller);
+                        log.setPd_op_type("增加");
+                        log.setPd_log_amount(obj.getTotalPrice());
+                        log.setPd_log_info("订单" + obj.getOrder_id() + "确认收货增加预存款");
+                        log.setPd_type("可用预存款");
+                        this.predepositLogService.save(log);
+                        User buyer = obj.getUser();
+                        buyer.setFreezeBlance(BigDecimal.valueOf(CommUtil.subtract(buyer.getFreezeBlance(), obj.getTotalPrice())));
+                        this.userService.update(buyer);
+                    }
+                }
+            }
+            resMap.put("resultCode","success");
+        	resMap.put("resultMsg","success");
+        }else {
+        	resMap.put("resultCode","error");
+        	resMap.put("resultMsg","请登录");
+        }      
+        String[] propertys={"resultCode","resultMSG"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
     }
 
     @SecurityMapping(display = false, rsequence = 0, title = "买家评价", value = "/buyer/order_evaluate.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
@@ -776,6 +918,36 @@ public class OrderBuyerAction {
         }
 
         return "redirect:order.htm?currentPage=" + currentPage;
+    }
+    
+    @SecurityMapping(display = false, rsequence = 0, title = "小程序买家退货申请保存", value = "/wxapplet/buyer/order_return_apply_save.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
+    @RequestMapping({"/wxapplet/buyer/order_return_apply_save.htm"})
+    public void wxapplet_order_return_apply_save(HttpServletRequest request, HttpServletResponse response, String id, String currentPage, String return_content) throws Exception {
+    	Map resMap=new HashMap();
+    	OrderForm obj = this.orderFormService
+                        .getObjById(CommUtil.null2Long(id));
+
+        if (obj.getUser().getId()
+                .equals(SecurityUserHolder.getCurrentUser().getId())){
+            obj.setOrder_status(45);
+            obj.setReturn_content(return_content);
+            this.orderFormService.update(obj);
+            if (this.configService.getSysConfig().isEmailEnable()){
+                send_email(request, obj,
+                           "email_toseller_order_return_apply_notify");
+            }
+            if (this.configService.getSysConfig().isSmsEnbale()){
+                send_sms(request, obj, obj.getUser().getMobile(),
+                         "sms_toseller_order_return_apply_notify");
+            }
+            resMap.put("resultCode","success");
+        	resMap.put("resultMsg","success");
+        }else {
+        	resMap.put("resultCode","error");
+        	resMap.put("resultMsg","请登录");
+        }      
+        String[] propertys={"resultCode","resultMSG"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
     }
 
     @SecurityMapping(display = false, rsequence = 0, title = "买家退商品流信息", value = "/buyer/order_return_ship.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
