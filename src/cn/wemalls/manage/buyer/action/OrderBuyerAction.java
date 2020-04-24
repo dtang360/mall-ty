@@ -74,6 +74,9 @@ public class OrderBuyerAction {
 
     @Autowired
     private IGoodsCartService goodsCartService;
+    
+    @Autowired
+    private IGoodsService goodsService;
 
     @Autowired
     private IGoodsReturnItemService goodsReturnItemService;
@@ -758,6 +761,108 @@ public class OrderBuyerAction {
         mv.addObject("url", CommUtil.getURL(request) + "/buyer/order.htm");
 
         return mv;
+    }
+    
+    //对每个商品评价保存
+    @SecurityMapping(display = false, rsequence = 0, title = "小程序买家评价保存", value = "/buyer/order_evaluate_save.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
+    @RequestMapping({"/wxapplet/buyer/order_evaluate_save.htm"})
+    public void wxapplet_order_evaluate_save(HttpServletRequest request, HttpServletResponse response, String goodsId,String orderId,String evaluateInfo,String descriptionEvaluate,String serviceEvaluate,String shipEvaluate,String goodsSpec) throws Exception {
+    	Map resMap =new HashMap();
+    	OrderForm obj = this.orderFormService.getObjById(CommUtil.null2Long(orderId));
+        Goods goods = this.goodsService.getObjById(CommUtil.null2Long(goodsId));
+
+        if (obj.getUser().getId().equals(SecurityUserHolder.getCurrentUser().getId())){
+        	//simba 这里需要一个判断，判断订单所有商品已评价，才改为状态50
+            if (obj.getOrder_status() == 40){
+                obj.setOrder_status(50);
+                this.orderFormService.update(obj);
+                OrderFormLog ofl = new OrderFormLog();
+                ofl.setAddTime(new Date());
+                ofl.setLog_info("评价订单");
+                ofl.setLog_user(SecurityUserHolder.getCurrentUser());
+                ofl.setOf(obj);
+                this.orderFormLogService.save(ofl);
+//                for (GoodsCart gc : obj.getGcs()){
+                    Evaluate eva = new Evaluate();
+                    eva.setAddTime(new Date());
+                    eva.setEvaluate_goods(goods);
+                    eva.setEvaluate_info(evaluateInfo);
+                    eva.setEvaluate_buyer_val(CommUtil.null2Int(SecurityUserHolder.getCurrentUser().getId()));
+                    eva.setDescription_evaluate(BigDecimal.valueOf(CommUtil.null2Long(descriptionEvaluate)));
+                    eva.setService_evaluate(BigDecimal.valueOf(CommUtil.null2Long(serviceEvaluate)));
+                    eva.setShip_evaluate(BigDecimal.valueOf(CommUtil.null2Long(shipEvaluate)));
+                    eva.setEvaluate_type("goods");
+                    eva.setEvaluate_user(SecurityUserHolder.getCurrentUser());
+                    eva.setOf(obj);
+                    eva.setGoods_spec(goodsSpec!=null?goodsSpec:null);             
+                    this.evaluateService.save(eva);
+                    
+                    
+                    Map params = new HashMap();
+                    params.put("store_id", goods.getGoods_store().getId());
+                    List<Evaluate> evas = this.evaluateService.query("select obj from Evaluate obj where obj.of.store.id=:store_id", params, -1, -1);
+                    double store_evaluate1 = 0.0D;
+                    double store_evaluate1_total = 0.0D;
+                    double description_evaluate = 0.0D;
+                    double description_evaluate_total = 0.0D;
+                    double service_evaluate = 0.0D;
+                    double service_evaluate_total = 0.0D;
+                    double ship_evaluate = 0.0D;
+                    double ship_evaluate_total = 0.0D;
+                    DecimalFormat df = new DecimalFormat("0.0");
+                    for (Evaluate eva1 : evas){
+                        store_evaluate1_total = store_evaluate1_total + eva1.getEvaluate_buyer_val();
+
+                        description_evaluate_total = description_evaluate_total + CommUtil.null2Double(eva1.getDescription_evaluate());
+
+                        service_evaluate_total = service_evaluate_total + CommUtil.null2Double(eva1.getService_evaluate());
+
+                        ship_evaluate_total = ship_evaluate_total + CommUtil.null2Double(eva1.getShip_evaluate());
+                    }
+                    store_evaluate1 = CommUtil.null2Double(df.format(store_evaluate1_total / evas.size()));
+                    description_evaluate = CommUtil.null2Double(df.format(description_evaluate_total / evas.size()));
+                    service_evaluate = CommUtil.null2Double(df.format(service_evaluate_total / evas.size()));
+                    ship_evaluate = CommUtil.null2Double(df.format(ship_evaluate_total / evas.size()));
+                    Store store = goods.getGoods_store();
+                    store.setStore_credit(store.getStore_credit() + eva.getEvaluate_buyer_val());
+                    this.storeService.update(store);
+                    params.clear();
+                    params.put("store_id", store.getId());
+                    List sps = this.storePointService.query("select obj from StorePoint obj where obj.store.id=:store_id", params, -1, -1);
+                    StorePoint point = null;
+                    if (sps.size() > 0)
+                        point = (StorePoint)sps.get(0);
+                   else{
+                        point = new StorePoint();
+                    }
+                    point.setAddTime(new Date());
+                    point.setStore(store);
+                    point.setDescription_evaluate(BigDecimal.valueOf(description_evaluate));
+                    point.setService_evaluate(BigDecimal.valueOf(service_evaluate));
+                    point.setShip_evaluate(BigDecimal.valueOf(ship_evaluate));
+                    point.setStore_evaluate1(BigDecimal.valueOf(store_evaluate1));
+                    if (sps.size() > 0)
+                        this.storePointService.update(point);
+                   else{
+                        this.storePointService.save(point);
+                    }
+
+                    User user = obj.getUser();
+                    user.setIntegral(user.getIntegral() + this.configService.getSysConfig().getIndentComment());
+                    this.userService.update(user);
+//                }
+            }
+            if (this.configService.getSysConfig().isEmailEnable()){
+                send_email(request, obj, "email_toseller_evaluate_ok_notify");
+            }
+            resMap.put("resultCode","success");
+            resMap.put("resultMsg","订单评价成功！");
+        }else {
+        	resMap.put("resultCode","error");
+        	resMap.put("resultMsg","请登录！");
+    	}
+        String[] propertys={"resultCode","resultMSG"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
     }
 
     @SecurityMapping(display = false, rsequence = 0, title = "删除订单信息", value = "/buyer/order_delete.htm*", rtype = "buyer", rname = "用户中心", rcode = "user_center", rgroup = "用户中心")
