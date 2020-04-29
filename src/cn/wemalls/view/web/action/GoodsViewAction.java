@@ -378,8 +378,8 @@ public class GoodsViewAction {
      * @param id 商品id
      * @return
      */
-    @RequestMapping({"/wx/goods.htm"})
-    public void wxGoods(HttpServletRequest request, HttpServletResponse response, String id){
+    @RequestMapping({"/wxapplet/goods.htm"})
+    public void wxappletGoods(HttpServletRequest request, HttpServletResponse response, String id){
         Map resMap = new HashMap();
         float total_count = 0;
         List<StoreCart> cart = this.storeCartService.cart_calc_wxapplet(request,false);
@@ -481,8 +481,9 @@ public class GoodsViewAction {
         }
         
         //店铺名称
-    
-        WxCommonUtil.printObjJson(resMap, response);
+        String[] propertys={"obj","goods_details","goods_photos","goods_photos"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
+//        WxCommonUtil.printObjJson(resMap, response);
     }
     
     
@@ -813,8 +814,8 @@ public class GoodsViewAction {
      * @param detail_property_status
      * @return
      */
-    @RequestMapping({"/wx/store_goods_list.htm"})
-    public void wxStore_goods_list(HttpServletRequest request, HttpServletResponse response, String gc_id, String currentPage, String orderBy, String orderType, String store_price_begin, String store_price_end, String brand_ids, String gs_ids, String properties, String op, String goods_name, String area_name, String area_id, String goods_view, String all_property_status, String detail_property_status){
+    @RequestMapping({"/wxapplet/store_goods_list.htm"})
+    public void wxappletStore_goods_list(HttpServletRequest request, HttpServletResponse response, String gc_id, String currentPage, String orderBy, String orderType, String store_price_begin, String store_price_end, String brand_ids, String gs_ids, String properties, String op, String goods_name, String area_name, String area_id, String goods_view, String all_property_status, String detail_property_status){
     	Map resMap=new HashMap();
     	
     	//产品

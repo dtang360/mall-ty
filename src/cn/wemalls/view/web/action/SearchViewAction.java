@@ -84,8 +84,8 @@ public class SearchViewAction {
      * @param goods_view
      * @return
      */
-    @RequestMapping({"/wx/search.htm"})
-    public void wxSearch(HttpServletRequest request, HttpServletResponse response, String type, String keyword, String currentPage, String orderBy, String orderType, String store_price_begin, String store_price_end, String view_type, String sc_id, String storeGrade_id, String checkbox_id, String storepoint, String area_id, String area_name, String goods_view){
+    @RequestMapping({"/wxapplet/search.htm"})
+    public void wxappletSearch(HttpServletRequest request, HttpServletResponse response, String type, String keyword, String currentPage, String orderBy, String orderType, String store_price_begin, String store_price_end, String view_type, String sc_id, String storeGrade_id, String checkbox_id, String storepoint, String area_id, String area_name, String goods_view){
 //        ModelAndView mv = new JModelAndView("search_goods_list.html",
 //                                            this.configService.getSysConfig(), this.userConfigService.getUserConfig(), 1, request, response);
         Map resultMap=new HashMap();

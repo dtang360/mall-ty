@@ -108,6 +108,7 @@ jQuery("#goodsTypeId").val("$!obj.goodsType.id");
    }).mouseout(function(){
 		jQuery("#logoImg").css('display','none');
 	});
+   
 #if($!obj.icon_type)	
 #if($!obj.icon_type==0)
 jQuery("#icon_sys_ul").show();
@@ -119,11 +120,13 @@ jQuery("#icon_sys_ul").hide();
 jQuery("#icon_acc_ul").show();
 #end
 #end
-#if($!obj.parent.id)
-jQuery("#icon").hide();	
-jQuery("#icon_sys_ul").hide();  
-jQuery("#icon_acc_ul").hide();
-#end	
+// #if($!obj.parent.id)
+// jQuery("#icon").hide();	
+// jQuery("#icon_sys_ul").hide();  
+// jQuery("#icon_acc_ul").hide();
+// #end	
+
+
 });
 
 
@@ -235,7 +238,7 @@ function recommendState(){
        <input name="icon_type" id="type1"  type="radio" #if($!obj.icon_type==0 || !$!obj.icon_type) checked="checked" #end value="0"><label for="type1">系统图标</label></input>
     
        <input name="icon_type" id="type2"  type="radio"  #if($!obj.icon_type==1) checked="checked" #end value="1"><label for="type2">图标上传</label></input>
-           </span><span id="nothis"><strong class="q"></strong><strong class="w">商城分类图标只在一级分类旁显示，最佳尺寸为：18x20</strong><strong class="c"></strong></span></li>
+           </span><span id="nothis"><strong class="q"></strong><strong class="w"> 最佳尺寸为：18*20</strong><strong class="c"></strong></span></li>
     </ul>
      
     <ul class="set1" id="icon_sys_ul" >

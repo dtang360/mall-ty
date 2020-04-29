@@ -147,8 +147,8 @@ public class ArticleViewAction {
     }
     
     
-    @RequestMapping({"/wx/article.htm"})
-    public void wxArticle(HttpServletRequest request, HttpServletResponse response, String mark,String id){
+    @RequestMapping({"/wxapplet/article.htm"})
+    public void wxappletArticle(HttpServletRequest request, HttpServletResponse response, String mark,String id){
         Map resMap = new HashMap();
         Article obj = null;
 //        Long id = CommUtil.null2Long(param);

@@ -376,8 +376,8 @@ public class IndexViewAction {
         return mv;
     }
     
-    @RequestMapping({ "/wx/floor.htm" })
-    public void wxFloor(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping({ "/wxapplet/floor.htm" })
+    public void wxappletFloor(HttpServletRequest request, HttpServletResponse response){
     		Map resMap=new HashMap();
     		String wemalls_view_type = CookitTools.Get_View_Type(request);
             String type = String.valueOf(request.getAttribute("type")!=null?request.getAttribute("type"):"");
@@ -831,8 +831,8 @@ public class IndexViewAction {
      * @param response
      * @return
      */
-    @RequestMapping({ "/wx/goodsclass.htm" })
-    public void wxGgoodsclass(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping({ "/wxapplet/goodsclass.htm" })
+    public void wxappletGgoodsclass(HttpServletRequest request, HttpServletResponse response){
     	Map resMap=new HashMap();
         String wemalls_view_type = CookitTools.Get_View_Type(request);
         Map params = new HashMap();
@@ -847,14 +847,15 @@ public class IndexViewAction {
      * @param response
      * @return
      */
-    @RequestMapping({ "/wx/goodsclassdetail.htm" })
-    public void wxGoodsclassDetail(HttpServletRequest request, HttpServletResponse response,String id){
+    @RequestMapping({ "/wxapplet/goodsclassdetail.htm" })
+    public void wxappletGoodsclassDetail(HttpServletRequest request, HttpServletResponse response,String id){
     	Map resMap=new HashMap();
         Map params = new HashMap();
         params.put("id", CommUtil.null2Long(id));        
         List gcds = this.goodsClassService.query("select obj from GoodsClass obj where obj.parent.id=:id   order by obj.sequence asc", params, -1, -1);
         resMap.put("gcds", gcds);
-        WxCommonUtil.printObjJson(resMap, response);
+        String[] propertys={"gcds","GoodsClass","Accessory","icon_acc"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
     }
 
     @RequestMapping({ "/forget.htm" })
@@ -961,31 +962,31 @@ public class IndexViewAction {
      * @param response
      * @return
      */
-    @RequestMapping({ "/wx/index.htm" })
-    public void wxIndex(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping({ "/wxapplet/index.htm" })
+    public void wxappletIndex(HttpServletRequest request, HttpServletResponse response){
         Map resMap = new HashMap();
         Map params = new HashMap();
 //        params.put("display", Boolean.valueOf(true));
 //        List gcs = this.goodsClassService.query("select obj from GoodsClass obj where obj.parent.id is null and obj.display=:display order by obj.sequence asc", params, 0, 15);
 //        resMap.put("gcs", gcs);
-        params.clear();
-        params.put("audit", Integer.valueOf(1));
-        params.put("recommend", Boolean.valueOf(true));
-        List gbs = this.goodsBrandService.query("select obj from GoodsBrand obj where obj.audit=:audit and obj.recommend=:recommend order by obj.sequence", params, -1, -1);
-//        resMap.put("gbs", gbs);
-        params.clear();
-        List img_partners = this.partnerService.query("select obj from Partner obj where obj.image.id is not null order by obj.sequence asc", params, -1, -1);
-//        resMap.put("img_partners", img_partners);
-        List text_partners = this.partnerService.query("select obj from Partner obj where obj.image.id is null order by obj.sequence asc", params, -1, -1);
-//        resMap.put("text_partners", text_partners);
-        params.clear();
-        params.put("mark", "news");
-        List acs = this.articleClassService.query("select obj from ArticleClass obj where obj.parent.id is null and obj.mark!=:mark order by obj.sequence asc", params, 0, 9);
-//        resMap.put("acs", acs);
-        params.clear();
-//        params.put("store_recommend", Boolean.valueOf(true));
-        params.put("goods_status", Integer.valueOf(0));
-        List store_reommend_goods_list = this.goodsService.query("select obj from Goods obj where obj.goods_status=:goods_status order by obj.addTime desc", params, 0, 999999);
+//        params.clear();
+//        params.put("audit", Integer.valueOf(1));
+//        params.put("recommend", Boolean.valueOf(true));
+//        List gbs = this.goodsBrandService.query("select obj from GoodsBrand obj where obj.audit=:audit and obj.recommend=:recommend order by obj.sequence", params, -1, -1);
+////        resMap.put("gbs", gbs);
+//        params.clear();
+//        List img_partners = this.partnerService.query("select obj from Partner obj where obj.image.id is not null order by obj.sequence asc", params, -1, -1);
+////        resMap.put("img_partners", img_partners);
+//        List text_partners = this.partnerService.query("select obj from Partner obj where obj.image.id is null order by obj.sequence asc", params, -1, -1);
+////        resMap.put("text_partners", text_partners);
+//        params.clear();
+//        params.put("mark", "news");
+//        List acs = this.articleClassService.query("select obj from ArticleClass obj where obj.parent.id is null and obj.mark!=:mark order by obj.sequence asc", params, 0, 9);
+////        resMap.put("acs", acs);
+//        params.clear();
+////        params.put("store_recommend", Boolean.valueOf(true));
+//        params.put("goods_status", Integer.valueOf(0));
+//        List store_reommend_goods_list = this.goodsService.query("select obj from Goods obj where obj.goods_status=:goods_status order by obj.addTime desc", params, 0, 999999);
 //        List store_reommend_goods = new ArrayList();
 //        int max = store_reommend_goods_list.size() >= 21 ? 20 : store_reommend_goods_list.size() - 1;
 //        for(int i = 0; i <= max; i++){
@@ -1007,23 +1008,23 @@ public class IndexViewAction {
 //            }
 //            
 //        }
-        params.clear();
-        params.put("beginTime", new Date());
-        params.put("endTime", new Date());
-        List groups = this.groupService.query("select obj from Group obj where obj.beginTime<=:beginTime and obj.endTime>=:endTime", params, -1, -1);
-        if(groups.size() > 0){
-            params.clear();
-            params.put("gg_status", Integer.valueOf(1));
-            params.put("gg_recommend", Integer.valueOf(1));
-            params.put("group_id", ((Group)groups.get(0)).getId());
-            List ggs = this.groupGoodsService.query("select obj from GroupGoods obj where obj.gg_status=:gg_status and obj.gg_recommend=:gg_recommend and obj.group.id=:group_id order by obj.gg_recommend_time desc", params, 0, 1);
-            if(ggs.size() > 0)
-            	resMap.put("group", ggs.get(0));
-        }
-        params.clear();
-        params.put("bg_time", CommUtil.formatDate(CommUtil.formatShortDate(new Date())));
-        params.put("bg_status", Integer.valueOf(1));
-        List bgs = this.bargainGoodsService.query("select obj from BargainGoods obj where obj.bg_time=:bg_time and obj.bg_status=:bg_status", params, 0, 5);
+//        params.clear();
+//        params.put("beginTime", new Date());
+//        params.put("endTime", new Date());
+//        List groups = this.groupService.query("select obj from Group obj where obj.beginTime<=:beginTime and obj.endTime>=:endTime", params, -1, -1);
+//        if(groups.size() > 0){
+//            params.clear();
+//            params.put("gg_status", Integer.valueOf(1));
+//            params.put("gg_recommend", Integer.valueOf(1));
+//            params.put("group_id", ((Group)groups.get(0)).getId());
+//            List ggs = this.groupGoodsService.query("select obj from GroupGoods obj where obj.gg_status=:gg_status and obj.gg_recommend=:gg_recommend and obj.group.id=:group_id order by obj.gg_recommend_time desc", params, 0, 1);
+//            if(ggs.size() > 0)
+//            	resMap.put("group", ggs.get(0));
+//        }
+//        params.clear();
+//        params.put("bg_time", CommUtil.formatDate(CommUtil.formatShortDate(new Date())));
+//        params.put("bg_status", Integer.valueOf(1));
+//        List bgs = this.bargainGoodsService.query("select obj from BargainGoods obj where obj.bg_time=:bg_time and obj.bg_status=:bg_status", params, 0, 5);
         //特价商品买就送商品
 //        resMap.put("bgs", bgs);
         params.clear();
@@ -1033,7 +1034,6 @@ public class IndexViewAction {
         List dgs = this.deliveryGoodsService.query("select obj from DeliveryGoods obj where obj.d_status=:d_status and obj.d_begin_time<=:d_begin_time and obj.d_end_time>=:d_end_time order by obj.d_audit_time desc", params, 0, 3);
         //买就送商品
 //        resMap.put("dgs", dgs);
-
         List msgs = new ArrayList();
         if(SecurityUserHolder.getCurrentUser() != null){
             params.clear();
@@ -1088,7 +1088,6 @@ public class IndexViewAction {
                 params.put("cart_session_id", cart_session_id);
                 params.put("sc_status", Integer.valueOf(0));
                 cookie_cart = this.storeCartService.query("select obj from StoreCart obj where obj.cart_session_id=:cart_session_id and obj.sc_status=:sc_status", params, -1, -1);
-
                 params.clear();
                 params.put("user_id", user.getId());
                 params.put("sc_status", Integer.valueOf(0));
@@ -1099,14 +1098,12 @@ public class IndexViewAction {
                 params.put("sc_status", Integer.valueOf(0));
                 user_cart = this.storeCartService.query("select obj from StoreCart obj where obj.user.id=:user_id and obj.sc_status=:sc_status", params, -1, -1);
             }
-
         }else if(!cart_session_id.equals("")){
             params.clear();
             params.put("cart_session_id", cart_session_id);
             params.put("sc_status", Integer.valueOf(0));
             cookie_cart = this.storeCartService.query("select obj from StoreCart obj where obj.cart_session_id=:cart_session_id and obj.sc_status=:sc_status", params, -1, -1);
         }
-
         for(StoreCart sc : user_cart){
             boolean sc_add = true;
             for(StoreCart sc1 : cart){
@@ -1149,11 +1146,9 @@ public class IndexViewAction {
            else{
                 total_price = CommUtil.null2Float(Double.valueOf(CommUtil.mul(Float.valueOf(gc.getCount()), goods.getGoods_current_price()))) + total_price;
             }
-        }
-        
+        }        
 //        resMap.put("total_price", Float.valueOf(total_price));
-//        resMap.put("cart", list);        
-        
+//        resMap.put("cart", list);    
         
         //首页楼层数据
         params.put("gf_display", Boolean.valueOf(true));
@@ -1161,7 +1156,6 @@ public class IndexViewAction {
 //        resMap.put("floors", floors);
         List floorsList=new ArrayList();
         List floorsChilds=new ArrayList();   
-        
         if(floors!=null&&floors.size()>0) {
         	GoodsFloor goodsFloor=null;
         	for(int i=0;i<floors.size();i++) {
@@ -1181,7 +1175,6 @@ public class IndexViewAction {
         		}
         	}     
         }       
-        
         //首页幻灯图片
         List accList=new ArrayList();
         AdvertPosition ap = this.advertPositionService.getObjById(CommUtil.null2Long(262157));
@@ -1193,8 +1186,6 @@ public class IndexViewAction {
         	 accList.add(accMap);        	 
         }
         resMap.put("accList", accList);
-    
-        
         //首页楼层数据结束
 //        resMap.put("url", CommUtil.getURL(request));
 //        params.put("gf_display", Boolean.valueOf(true));
@@ -1202,20 +1193,15 @@ public class IndexViewAction {
         CommUtil.saveWebPaths(map, this.configService.getSysConfig(), request);
         String loadimg = map.get("imageWebServer") + "/resources/style/common/images/loader.gif";
         String errorimg = map.get("webPath") + "/" + map.get("goodsImagePath") + "/" + map.get("goodsImageName");
-        
         resMap.put("url", CommUtil.getURL(request));
         resMap.put("map", map);
         resMap.put("loadimg", loadimg);
         resMap.put("errorimg", errorimg);       
-        
         resMap.put("floorsList",floorsList);
+        String[] propertys={"group","accList","map","loadimg","errorimg","floorsList","goods_main_photo"};
+        WxCommonUtil.printObjJsonAll(resMap, response,propertys,false,false,false);
         
-        
-        
-
-        
-        WxCommonUtil.printObjJson(resMap, response);
-        
+//        WxCommonUtil.printObjJson(resMap, response);
     }
     
 
